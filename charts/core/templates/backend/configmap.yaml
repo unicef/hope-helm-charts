@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "core.fullname" . }}-backend
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+data:
+  # for healthchecks and test command
+  DJANGO_ALLOWED_HOSTS: "kubernetes.internal,{{ .Values.ingress.host }},{{ include "core.fullname" . }}-backend"
+  DOMAIN: "{{ .Values.ingress.host }}"
+{{- range $key, $value :=  .Values.backend.config }}
+  {{- if eq $value "" }}
+  {{- else }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}

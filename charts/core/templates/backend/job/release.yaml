@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "core.fullname" . }}-backend-release
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+    core/job: upgrade
+  annotations:
+    "helm.sh/hook": pre-upgrade, post-install
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "core.labels" . | nindent 8 }}
+        core/job: upgrade
+    spec:
+      serviceAccountName: {{ include "core.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      {{- include "core.checkingContainer" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}-backend-release
+          command: ["/bin/sh"]
+          args: ["-c", {{ .Values.backend.job.preUpgrade.command | quote }}]
+          securityContext:
+            {{- toYaml .Values.backend.securityContext | nindent 12 }}
+          image: "{{ include "core.backend.image" . }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+          {{- include "core.backend.envConfig" . | nindent 10 }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+          {{- if .Values.keyvault.enabled }}
+          - name: {{ include "core.fullname" . }}-keyvault
+            mountPath: {{ .Values.keyvault.mountPath }}
+            readOnly: true
+          {{- end }}
+          {{- if .Values.nginx.enabled }}
+          - name: statics
+            mountPath: /data/staticserve
+            readOnly: false
+          {{- end }}
+      restartPolicy: Never
+      volumes:
+      {{- if .Values.keyvault.enabled }}
+      - name: {{ include "core.fullname" . }}-keyvault
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: {{ include "core.fullname" . }}-secret-provider
+      {{- end }}
+      {{- include "core.scriptVolume" . | nindent 6 }}
+      {{- if .Values.nginx.enabled }}
+      - name: statics
+        emptyDir: {}
+      {{- end }}
+  backoffLimit: 3
+---

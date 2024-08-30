@@ -1,0 +1,68 @@
+{{- if .Values.backend.admin.create -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "core.fullname" . }}-backend-init
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+    core/job: upgrade
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "core.labels" . | nindent 8 }}
+        core/job: upgrade
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "core.serviceAccountName" . }}
+      initContainers:
+      {{- include "core.checkingContainer" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}-backend-init
+          command:
+          - sh
+          - -c
+          - |
+            python3 manage.py createsuperuser --no-input --email {{ .Values.backend.admin.email }} || true ; \
+            python3 manage.py loadcountries ; \
+            python3 manage.py loadcountrycodes ; \
+            echo Success!
+          env:
+          - name: DJANGO_SUPERUSER_USERNAME
+            value: {{ .Values.backend.admin.username | quote }}
+          - name: DJANGO_SUPERUSER_PASSWORD
+            value: {{ .Values.backend.admin.password | quote }}
+          securityContext:
+            {{- toYaml .Values.backend.securityContext | nindent 12 }}
+          image: "{{ include "core.backend.image" . }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+          {{- include "core.backend.envConfig" . | nindent 10 }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+          {{- if .Values.keyvault.enabled }}
+          - name: {{ include "core.fullname" . }}-keyvault
+            mountPath: {{ .Values.keyvault.mountPath }}
+            readOnly: true
+          {{- end }}
+      restartPolicy: Never
+      volumes:
+      {{- if .Values.keyvault.enabled }}
+      - name: {{ include "core.fullname" . }}-keyvault
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: {{ include "core.fullname" . }}-secret-provider
+      {{- end }}
+      {{- include "core.scriptVolume" . | nindent 6 }}
+  backoffLimit: 1
+{{- end -}}

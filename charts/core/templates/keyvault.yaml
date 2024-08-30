@@ -1,0 +1,33 @@
+{{- if .Values.keyvault.enabled }}
+{{- $userAssignedIdentityID := required "userAssignedIdentityID is required" .Values.keyvault.userAssignedIdentityID }}
+{{- $tenantId := required "tenantId is required" .Values.keyvault.tenantId }}
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: {{ include "core.fullname" . }}-secret-provider
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: {{ $userAssignedIdentityID }}
+    keyvaultName: {{ .Values.keyvault.name }}
+    cloudName: ""
+    objects: |
+      array:
+{{- range .Values.keyvault.envMappings }}
+        - |
+          objectName: {{ .name }}
+          objectType: secret
+          objectVersion: ""
+{{- end }}
+    tenantId: {{ $tenantId }}
+  secretObjects:
+  - secretName: {{ include "core.fullname" . }}-keyvault
+    type: Opaque
+    data:
+{{- range .Values.keyvault.envMappings }}
+      - objectName: {{ .name }}
+        key: {{ .key }}
+{{- end }}
+{{- end }}

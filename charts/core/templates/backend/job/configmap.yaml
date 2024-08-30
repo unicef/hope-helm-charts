@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "core.fullname" . }}-scripts
+data:
+{{ (.Files.Glob "files/release/check.sh").AsConfig | indent 2}}

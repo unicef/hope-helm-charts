@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "core.fullname" . }}-celery-beat
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "core.selectorLabels" . | nindent 6 }}
+      core/service: celery-beat
+  template:
+    metadata:
+      {{- with .Values.celery.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "core.labels" . | nindent 8 }}
+        {{- with .Values.celery.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        core/service: celery-beat
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "core.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+      # FIXME: beat will crash if db is available but migrations are not done
+      initContainers:
+      {{- include "core.checkingContainer" . | nindent 6 }}
+      volumes:
+      {{- include "core.scriptVolume" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}-celery-beat
+          args:
+            - celery -A hct_mis_api.apps.core.celery beat -l info --scheduler hct_mis_api.apps.core.models:CustomDatabaseScheduler
+          command:
+            - sh
+            - -c
+          securityContext:
+            {{- toYaml .Values.celery.securityContext | nindent 12 }}
+          image: "{{ include "core.backend.image" . }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+          {{- include "core.backend.envConfig" . | nindent 10 }}
+          resources:
+            {{- toYaml .Values.celery.resources | nindent 12 }}
+      {{ with .Values.celery.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.celery.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.celery.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

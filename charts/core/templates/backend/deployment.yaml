@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "core.fullname" . }}-backend
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "core.selectorLabels" . | nindent 6 }}
+      core/service: backend
+  template:
+    metadata:
+      {{- with .Values.backend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "core.labels" . | nindent 8 }}
+        {{- with .Values.backend.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        core/service: backend
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "core.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- if .Values.nginx.enabled }}
+        - name: statics
+          image: "{{ include "core.backend.image" . }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args:
+            - /bin/sh
+            - -c
+            - |
+              python3 manage.py collectstatic --noinput
+          volumeMounts:
+            - name: statics
+              mountPath: /data/staticserve
+          envFrom:
+          {{- include "core.backend.envConfig" . | nindent 10 }}
+      {{- end }}
+      {{- include "core.checkingContainer" . | nindent 8 }}
+      containers:
+        {{- if .Values.nginx.enabled }}
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          env:
+            - name: UPSTREAMS
+              value: "/:localhost:{{ .Values.backend.service.port }}"
+            - name: STATICS
+              value: "/api/static:/data/staticserve"
+            - name: NGINX_PORT
+              value: "{{ .Values.nginx.service.port }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.nginx.service.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: statics
+              mountPath: /data/staticserve
+              readOnly: true
+        {{- end }}
+        - name: backend
+          securityContext:
+            {{- toYaml .Values.backend.securityContext | nindent 12 }}
+          image: "{{ include "core.backend.image" . }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          envFrom:
+          {{- include "core.backend.envConfig" . | nindent 10 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.backend.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.backend.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+          {{- if .Values.nginx.enabled }}
+            - name: statics
+              mountPath: /data/staticserve
+              readOnly: true
+          {{- end }}
+          {{- if .Values.keyvault.enabled }}
+            - name: {{ include "core.fullname" . }}-keyvault
+              mountPath: {{ .Values.keyvault.mountPath }}
+              readOnly: true
+          {{- end }}
+      volumes:
+      {{- include "core.scriptVolume" . | nindent 6 }}
+      {{- if .Values.nginx.enabled }}
+      - name: statics
+        emptyDir: {}
+      {{- end }}
+      {{- if .Values.keyvault.enabled }}
+      - name: {{ include "core.fullname" . }}-keyvault
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: {{ include "core.fullname" . }}-secret-provider
+      {{- end }}
+      {{ with .Values.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

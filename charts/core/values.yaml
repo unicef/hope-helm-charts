@@ -1,0 +1,244 @@
+# Default values for hope-core.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: core
+  annotations: {}
+
+global:
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+nginx:
+  enabled: true
+
+  image:
+    repository: tivix/docker-nginx
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: v18
+
+  service:
+    type: ClusterIP
+    port: 80
+
+celery:
+  podAnnotations: {}
+
+  replicaCount: 1
+  autoscaling:
+    enabled: true
+
+flower:
+  enabled: false
+
+  image: saxix/flower:1.6
+  replicaCount: 1
+  podAnnotations: {}
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  tolerations: []
+  affinity: {}
+  service:
+    type: ClusterIP
+    port: 8000
+
+  config:
+    FLOWER_URL_PREFIX: flower
+
+  secret:
+    FLOWER_BASIC_AUTH: "change:me"
+
+ingress:
+  enabled: false
+  # className: ""
+  annotations: {}
+  # kubernetes.io/tls-acme: "true"
+  hosts:
+  - host: chart-example.local
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+backend:
+  admin:
+    create: true
+    username: admin
+    password: change-me-pretty-please
+    email: admin@hope.local
+
+  job:
+    preUpgrade:
+      command: python3 manage.py upgrade
+
+  # it's recommended to not store secrets in the helm values file
+  # but rather in a secret store like Azure Key Vault
+  # so the below can be commented-out and keyvault.enabled set to true
+  secret:
+    SECRET_KEY: change-me
+
+  config:
+    CSP_REPORT_ONLY: "true"
+    CSP_REPORT_PERCENTAGE: "0.1"
+    CSP_DEFAULT_SRC: "'self'"
+    CSP_FRAME_ANCESTORS: "'none'"
+    CSP_STYLE_SRC: "'self','unsafe-inline','unsafe-eval',fonts.googleapis.com,cdn.jsdelivr.net,cdnjs.cloudflare.com,maxcdn.bootstrapcdn.com,unpkg.com"
+    CSP_MANIFEST_SRC: "'self'"
+    CSP_SCRIPT_SRC: "'self','unsafe-inline','unsafe-eval',js-agent.newrelic.com,cdn.jsdelivr.net,cdnjs.cloudflare.com,unpkg.com"
+    CSP_IMG_SRC: "'self',data:,cdn.datatables.net,map1a.vis.earthdata.nasa.gov,map1b.vis.earthdata.nasa.gov,map1c.vis.earthdata.nasa.gov"
+    CSP_FONT_SRC: "'self',data:,fonts.gstatic.com,maxcdn.bootstrapcdn.com"
+    CSP_MEDIA_SRC: "'self'"
+    CSP_CONNECT_SRC: "sentry.io,gov-bam.nr-data.net,cdn.jsdelivr.net"
+
+  replicaCount: 2
+
+  image:
+    repository: unicef/hope
+
+  podAnnotations: {}
+  podLabels: {}
+
+  podSecurityContext: {}
+  # fsGroup: 2000
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+  resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+  livenessProbe:
+    timeoutSeconds: 30
+    httpGet:
+      path: /api/_health
+      port: 8000
+      httpHeaders:
+      - name: X-Health
+        value: "Kubernetes-Health"
+      - name: Host
+        value: "kubernetes.internal"
+
+  readinessProbe:
+    timeoutSeconds: 30
+    httpGet:
+      path: /api/_health
+      port: 8000
+      httpHeaders:
+      - name: X-Health
+        value: "Kubernetes-Health"
+      - name: Host
+        value: "kubernetes.internal"
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+
+postgresql:
+  enabled: true
+  auth:
+    username: hopeuser
+    password: change-me-please
+    enablePostgresUser: true
+    postgresPassword: really-change-me
+  primary:
+    initdb:
+      user: postgres
+      password: really-change-me
+      scripts:
+        init.sql: |
+          CREATE DATABASE hopedb;
+          GRANT ALL PRIVILEGES ON DATABASE hopedb TO hopeuser;
+          \c hopedb;
+          CREATE EXTENSION IF NOT EXISTS postgis;
+          GRANT ALL ON SCHEMA public TO hopeuser;
+          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO hopeuser;
+
+          CREATE DATABASE cash_assist_datahub_mis;
+          GRANT ALL PRIVILEGES ON DATABASE cash_assist_datahub_mis TO hopeuser;
+          \c cash_assist_datahub_mis;
+          CREATE EXTENSION IF NOT EXISTS postgis;
+          GRANT ALL ON SCHEMA public TO hopeuser;
+          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO hopeuser;
+
+          CREATE DATABASE cash_assist_datahub_ca;
+          GRANT ALL PRIVILEGES ON DATABASE cash_assist_datahub_ca TO hopeuser;
+          \c cash_assist_datahub_ca;
+          CREATE EXTENSION IF NOT EXISTS postgis;
+          GRANT ALL ON SCHEMA public TO hopeuser;
+          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO hopeuser;
+
+          CREATE DATABASE cash_assist_datahub_erp;
+          GRANT ALL PRIVILEGES ON DATABASE cash_assist_datahub_erp TO hopeuser;
+          \c cash_assist_datahub_erp;
+          CREATE EXTENSION IF NOT EXISTS postgis;
+          GRANT ALL ON SCHEMA public TO hopeuser;
+          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO hopeuser;
+
+          CREATE DATABASE registration_datahub;
+          GRANT ALL PRIVILEGES ON DATABASE registration_datahub TO hopeuser;
+          \c registration_datahub;
+          CREATE EXTENSION IF NOT EXISTS postgis;
+          GRANT ALL ON SCHEMA public TO hopeuser;
+          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO hopeuser;
+
+redis:
+  enabled: true
+
+  architecture: standalone
+  
+  auth:
+    enabled: false
+
+elasticsearch:
+  enabled: true
+  plugins: "analysis-phonetic,analysis-icu"
+  master:
+    replicaCount: 1
+  coordinating:
+    replicaCount: 1
+
+keyvault:
+  enabled: false
+  envMappings: []
+  mountPath: /mnt/secrets
+
+  # tenantId:
+  # userAssignedIdentityID:

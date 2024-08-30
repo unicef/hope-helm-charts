@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "core.fullname" . }}-celery-worker
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.celery.autoscaling.enabled }}
+  replicas: {{ .Values.celery.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "core.selectorLabels" . | nindent 6 }}
+      core/service: celery-worker
+  template:
+    metadata:
+      {{- with .Values.celery.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "core.labels" . | nindent 8 }}
+        {{- with .Values.celery.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        core/service: celery-worker
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "core.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- include "core.checkingContainer" . | nindent 6 }}
+      volumes:
+      {{- include "core.scriptVolume" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}-celery-worker-low-priority
+          args:
+            - celery -A hct_mis_api.apps.core.celery worker -n low-priority-$HOSTNAME -E -l info --max-tasks-per-child=4 -Q default
+          command:
+            - sh
+            - -c
+          securityContext:
+            {{- toYaml .Values.celery.securityContext | nindent 12 }}
+          image: "{{ include "core.backend.image" . }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+          {{- include "core.backend.envConfig" . | nindent 10 }}
+          resources:
+            {{- toYaml .Values.celery.resources | nindent 12 }}
+        - name: {{ .Chart.Name }}-celery-worker-high-priority
+          args:
+            - celery -A hct_mis_api.apps.core.celery worker  -n high-priority-$HOSTNAME  -E -l info --max-tasks-per-child=4 -Q priority
+          command:
+            - sh
+            - -c
+          securityContext:
+            {{- toYaml .Values.celery.securityContext | nindent 12 }}
+          image: "{{ include "core.backend.image" . }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+          {{- include "core.backend.envConfig" . | nindent 10 }}
+          resources:
+            {{- toYaml .Values.celery.resources | nindent 12 }}
+      {{ with .Values.celery.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.celery.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.celery.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
