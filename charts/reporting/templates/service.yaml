@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "reporting.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.backend.service.type }}
   ports:
     - port: {{ .Values.backend.service.port }}
       targetPort: http
