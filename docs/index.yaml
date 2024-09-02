@@ -3,7 +3,7 @@ entries:
   core:
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2024-09-02T13:15:20.337823+02:00"
+    created: "2024-09-02T13:19:41.311978+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -27,7 +27,7 @@ entries:
   hope-country-report:
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-02T13:15:20.338413+02:00"
+    created: "2024-09-02T13:19:41.312366+02:00"
     description: A Helm chart for Kubernetes
     digest: ffb6d9531cd0a54aed7a421c4a97c685e09dc372b57dd06eb1af32a3736e6314
     name: hope-country-report
@@ -38,7 +38,17 @@ entries:
   reporting:
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-02T13:15:20.338695+02:00"
+    created: "2024-09-02T13:19:41.313003+02:00"
+    description: A Helm chart for Kubernetes
+    digest: 7373111b2f23fe71681a318b47b3b13f9f756fbb132b0bd4e14ccb65fd669fa2
+    name: reporting
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/reporting-0.3.3.tgz
+    version: 0.3.3
+  - apiVersion: v2
+    appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
+    created: "2024-09-02T13:19:41.312764+02:00"
     description: A Helm chart for Kubernetes
     digest: b292b4c67a960951f5dd46f27d6f92fa66be8625a51abcd494247f2bbc50983e
     name: reporting
@@ -46,4 +56,4 @@ entries:
     urls:
     - https://unicef.github.io/hope-helm-charts/reporting-0.3.2.tgz
     version: 0.3.2
-generated: "2024-09-02T13:15:20.323769+02:00"
+generated: "2024-09-02T13:19:41.299119+02:00"
