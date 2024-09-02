@@ -1,0 +1,31 @@
+{{- if .Values.keyvault.enabled }}
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: {{ .Values.keyvault.secretProviderName }}
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: {{ .Values.keyvault.userAssignedIdentityID }}
+    keyvaultName: {{ .Values.keyvault.name }}
+    cloudName: ""
+    objects: |
+      array:
+{{- range .Values.keyvault.envMappings }}
+        - |
+          objectName: {{ .name }}
+          objectType: secret
+          objectVersion: ""
+{{- end }}
+    tenantId: {{ .Values.keyvault.tenantId }}
+  secretObjects:
+  - secretName: {{ include "reporting.fullname" . }}-keyvault
+    type: Opaque
+    data:
+{{- range .Values.keyvault.envMappings }}
+      - objectName: {{ .name }}
+        key: {{ .key }}
+{{- end }}
+{{- end }}

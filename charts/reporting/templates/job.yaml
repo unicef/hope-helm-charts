@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "reporting.fullname" . }}-release
+  labels:
+    {{- include "reporting.labels" . | nindent 4 }}
+    reporting/job: upgrade
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "reporting.labels" . | nindent 8 }}
+        reporting/job: upgrade
+        resource: hcr-job
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-backend-release
+          command: ["/bin/sh"]
+          args: ["-c", "python3 /code/manage.py upgrade"]
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          {{- if .Values.keyvault.enabled }}
+          - secretRef:
+              name: {{ include "reporting.fullname" . }}-keyvault
+          {{- end }}
+          - configMapRef:
+              name: {{ include "reporting.fullname" . }}-backend
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          {{- if .Values.keyvault.enabled }}
+          - name: secrets-store01-inline
+            mountPath: {{ .Values.keyvault.mountPath }}
+            readOnly: true
+          {{- end }}
+      restartPolicy: Never
+      volumes:
+      {{- if .Values.keyvault.enabled }}
+        - name: secrets-store01-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.keyvault.secretProviderName }}
+      {{- end }}
+  backoffLimit: 3

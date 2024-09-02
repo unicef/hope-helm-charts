@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reporting.fullname" . }}-backend
+  labels:
+    {{- include "reporting.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "reporting.selectorLabels" . | nindent 6 }}
+      service: backend
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "reporting.selectorLabels" . | nindent 8 }}
+        service: "backend"
+    spec:
+      containers:
+        - name: backend
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          {{- if .Values.keyvault.enabled }}
+          - secretRef:
+              name: {{ include "reporting.fullname" . }}-keyvault
+          {{- end }}
+          - configMapRef:
+              name: {{ include "reporting.fullname" . }}-backend
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          {{- if .Values.keyvault.enabled }}
+          - name: secrets-store01-inline
+            mountPath: {{ .Values.keyvault.mountPath }}
+            readOnly: true
+          {{- end }}
+      volumes:
+      {{- if .Values.keyvault.enabled }}
+        - name: secrets-store01-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.keyvault.secretProviderName }}
+      {{- end }}

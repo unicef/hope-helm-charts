@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reporting.fullname" . }}-celery-worker
+  labels:
+    {{- include "reporting.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.celery.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "reporting.selectorLabels" . | nindent 6 }}
+      service: "celery-worker"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "reporting.selectorLabels" . | nindent 8 }}
+        resource: "hcr-deployment"
+        service: "celery-worker"
+    spec:
+      containers:
+        - name: celery
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["celery_worker"]
+          envFrom:
+          {{- if .Values.keyvault.enabled }}
+          - secretRef:
+              name: {{ include "reporting.fullname" . }}-keyvault
+          {{- end }}
+          - configMapRef:
+              name: {{ include "reporting.fullname" . }}-backend
+          volumeMounts:
+          {{- if .Values.keyvault.enabled }}
+          - name: secrets-store01-inline
+            mountPath: {{ .Values.keyvault.mountPath }}
+            readOnly: true
+          {{- end }}
+      volumes:
+      {{- if .Values.keyvault.enabled }}
+        - name: secrets-store01-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.keyvault.secretProviderName }}
+      {{- end }}
