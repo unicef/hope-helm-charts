@@ -18,7 +18,7 @@ spec:
         {{- if .Values.flower.enabled }}
         - path: /flower/
           pathType: Prefix
-          backend: 
+          backend:
             service:
               name: {{ include "core.fullname" . }}-celery-flower
               port:

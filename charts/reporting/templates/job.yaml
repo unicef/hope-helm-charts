@@ -48,6 +48,6 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: {{ .Values.keyvault.secretProviderName }}
+              secretProviderClass: {{ include "reporting.fullname" . }}-secret-provider
       {{- end }}
   backoffLimit: 3

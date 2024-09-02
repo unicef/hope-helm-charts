@@ -2,8 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
-
 image:
   repository: unicef/hope-support-images
   pullPolicy: IfNotPresent
@@ -105,3 +103,12 @@ backend:
     type: ClusterIP
     port: 8000
 
+celery:
+  replicaCount: 1
+
+keyvault:
+  enabled: false
+  mountPath: /mnt/secrets
+
+flower:
+  enabled: false
