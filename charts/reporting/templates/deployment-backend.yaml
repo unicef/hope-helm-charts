@@ -11,7 +11,7 @@ spec:
   selector:
     matchLabels:
       {{- include "reporting.selectorLabels" . | nindent 6 }}
-      service: backend
+      service: "backend"
   template:
     metadata:
       {{- with .Values.podAnnotations }}

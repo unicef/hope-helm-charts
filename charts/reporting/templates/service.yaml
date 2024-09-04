@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "reporting.fullname" . }}
+  name: {{ include "reporting.fullname" . }}-backend
   labels:
     {{- include "reporting.labels" . | nindent 4 }}
 spec:
@@ -13,3 +13,4 @@ spec:
       name: http
   selector:
     {{- include "reporting.selectorLabels" . | nindent 4 }}
+    service: "backend"
