@@ -7,6 +7,8 @@ fi
 
 set -euo pipefail
 
+cd "$(dirname "$0")/.."
+
 CHART_DIR="charts"
 OUTPUT_DIR="docs"
 REPO_URL="https://unicef.github.io/hope-helm-charts/"

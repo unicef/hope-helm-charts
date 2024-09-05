@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reporting.fullname" . }}-celery-flower
+  labels:
+    {{- include "reporting.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "reporting.selectorLabels" . | nindent 6 }}
+      reporting/service: celery-flower
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.flower.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "reporting.selectorLabels" . | nindent 8 }}
+        reporting/service: celery-flower
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "reporting.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.flower.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-celery-flower
+          securityContext:
+            {{- toYaml .Values.flower.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["celery", "flower", "-A", "hope_country_report.config.celery", "--address=0.0.0.0", "--broker=$CELERY_BROKER_URL"]
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "reporting.fullname" . }}-backend
+          env:
+            - name: FLOWER_URL_PREFIX
+              value: flower
+            {{- if .Values.keyvault.enabled }}
+            - name: FLOWER_BASIC_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "reporting.fullname" . }}-keyvault
+                  key: FLOWER_BASIC_AUTH
+            {{- end }}
+          ports:
+            - containerPort: 5555
+              name: http
+          volumeMounts:
+          {{- if .Values.keyvault.enabled }}
+          - name: secrets-store01-inline
+            mountPath: {{ .Values.keyvault.mountPath }}
+            readOnly: true
+          {{- end }}
+          resources:
+            {{- toYaml .Values.flower.resources | nindent 12 }}
+      {{- with .Values.flower.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flower.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flower.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if .Values.keyvault.enabled }}
+        - name: secrets-store01-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "reporting.fullname" . }}-secret-provider
+      {{- end }}
