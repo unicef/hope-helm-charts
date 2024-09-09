@@ -119,3 +119,28 @@ flower:
   service:
     type: ClusterIP
     port: 5555
+
+redis:
+  auth:
+    enabled: false
+
+  master:
+    count: 1
+
+  replica:
+    replicaCount: 1
+
+postgresql:
+  enabled: true
+  auth:
+    username: "reporting"
+    password: ""
+    database: "reporting"
+    postgresPassword: ""
+  primary:
+    initdb:
+      user: postgres
+      password: ""
+      scripts:
+        init.sql: |
+          CREATE EXTENSION IF NOT EXISTS postgis;
