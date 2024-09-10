@@ -15,7 +15,6 @@ spec:
       labels:
         {{- include "reporting.labels" . | nindent 8 }}
         reporting/job: upgrade
-        resource: hcr-job
     spec:
       containers:
         - name: {{ .Chart.Name }}-backend-release

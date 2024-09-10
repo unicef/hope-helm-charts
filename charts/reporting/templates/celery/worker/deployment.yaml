@@ -20,7 +20,6 @@ spec:
       {{- end }}
       labels:
         {{- include "reporting.selectorLabels" . | nindent 8 }}
-        resource: "hcr-deployment"
         service: "celery-worker"
     spec:
       containers:
