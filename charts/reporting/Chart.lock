@@ -7,6 +7,6 @@ dependencies:
   version: 13.1.5
 - name: keyvault
   repository: file://../keyvault
-  version: 0.1.0
-digest: sha256:0250e3c8514bef2282fc727e737a0e61bd58837e9c53c899c5012e2fdc296e35
-generated: "2024-09-12T13:37:37.016993+02:00"
+  version: 0.1.1
+digest: sha256:71d2c0d2a228aa9e5084e2d535dea97b046bd3e526cdd25adcbddd37f6dc132e
+generated: "2024-09-12T14:36:38.675008+02:00"

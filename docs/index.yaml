@@ -3,7 +3,7 @@ entries:
   core:
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2024-09-12T14:30:21.524891+02:00"
+    created: "2024-09-12T14:38:30.232836+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -26,7 +26,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2024-09-12T14:30:21.513234+02:00"
+    created: "2024-09-12T14:38:30.220961+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -47,10 +47,52 @@ entries:
     urls:
     - https://unicef.github.io/hope-helm-charts/core-0.1.3.tgz
     version: 0.1.3
+  keyvault:
+  - apiVersion: v2
+    created: "2024-09-12T14:38:30.233349+02:00"
+    description: A Helm chart for Kubernetes
+    digest: 62aa9e7054bfc9e4e87c7c4fab9078ca35fee29a7a049b34462031f991722015
+    name: keyvault
+    type: library
+    urls:
+    - https://unicef.github.io/hope-helm-charts/keyvault-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    created: "2024-09-12T14:38:30.233133+02:00"
+    description: A Helm chart for Kubernetes
+    digest: 743022c665a687073859751167ee48574995ca24ba486f4ff4a9c1abb06788d2
+    name: keyvault
+    type: library
+    urls:
+    - https://unicef.github.io/hope-helm-charts/keyvault-0.1.0.tgz
+    version: 0.1.0
   reporting:
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.552176+02:00"
+    created: "2024-09-12T14:38:30.266576+02:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 18.1.1
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 13.1.5
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.1
+    description: A Helm chart for Kubernetes
+    digest: 82672a849cc2956852d992fb74e33e0e9ce1cb8cb467a4de4d1bef18632401d8
+    name: reporting
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/reporting-0.6.1.tgz
+    version: 0.6.1
+  - apiVersion: v2
+    appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
+    created: "2024-09-12T14:38:30.260875+02:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -73,7 +115,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.546334+02:00"
+    created: "2024-09-12T14:38:30.254676+02:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -92,7 +134,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.53997+02:00"
+    created: "2024-09-12T14:38:30.248257+02:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -111,7 +153,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.533797+02:00"
+    created: "2024-09-12T14:38:30.242452+02:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -130,7 +172,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.527684+02:00"
+    created: "2024-09-12T14:38:30.236216+02:00"
     description: A Helm chart for Kubernetes
     digest: d54780fcefdf07477ae98d05bf64f8b81b4b2ea8d5bdbb605ccac3cc4659f957
     name: reporting
@@ -140,7 +182,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.527125+02:00"
+    created: "2024-09-12T14:38:30.235755+02:00"
     description: A Helm chart for Kubernetes
     digest: 299a7ffaf49071c36d14f5a5017068b08c7df0f8d3fe006df79aa0633f283bbd
     name: reporting
@@ -150,7 +192,7 @@ entries:
     version: 0.3.6
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.526582+02:00"
+    created: "2024-09-12T14:38:30.235261+02:00"
     description: A Helm chart for Kubernetes
     digest: 77127f0ada1776aa929db12510659ab43bfcbd6b7e14d083a8a18a73b9674b81
     name: reporting
@@ -160,7 +202,7 @@ entries:
     version: 0.3.5
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.526107+02:00"
+    created: "2024-09-12T14:38:30.234538+02:00"
     description: A Helm chart for Kubernetes
     digest: c9803cb5241c6818973df3fab76a5e698c6a285a768e6bfa7250541cc1090924
     name: reporting
@@ -170,7 +212,7 @@ entries:
     version: 0.3.4
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.525717+02:00"
+    created: "2024-09-12T14:38:30.234154+02:00"
     description: A Helm chart for Kubernetes
     digest: 7373111b2f23fe71681a318b47b3b13f9f756fbb132b0bd4e14ccb65fd669fa2
     name: reporting
@@ -180,7 +222,7 @@ entries:
     version: 0.3.3
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2024-09-12T14:30:21.525335+02:00"
+    created: "2024-09-12T14:38:30.233743+02:00"
     description: A Helm chart for Kubernetes
     digest: b292b4c67a960951f5dd46f27d6f92fa66be8625a51abcd494247f2bbc50983e
     name: reporting
@@ -188,4 +230,4 @@ entries:
     urls:
     - https://unicef.github.io/hope-helm-charts/reporting-0.3.2.tgz
     version: 0.3.2
-generated: "2024-09-12T14:30:21.50089+02:00"
+generated: "2024-09-12T14:38:30.20845+02:00"

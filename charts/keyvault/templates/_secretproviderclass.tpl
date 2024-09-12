@@ -23,8 +23,8 @@ metadata:
 spec:
   provider: {{ .Values.keyvault.provider | default "azure" }}
   parameters:
-    usePodIdentity: {{ .Values.keyvault.usePodIdentity | default "false" }}
-    useVMManagedIdentity: {{ .Values.keyvault.useVMManagedIdentity | default "true" }}
+    usePodIdentity: {{ quote .Values.keyvault.usePodIdentity | default "false" }}
+    useVMManagedIdentity: {{ quote .Values.keyvault.useVMManagedIdentity | default "true" }}
     userAssignedIdentityID: {{ .Values.keyvault.userAssignedIdentityID }}
     keyvaultName: {{ .Values.keyvault.name }}
     tenantId: {{ .Values.keyvault.tenantId }}
