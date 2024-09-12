@@ -30,24 +30,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ["celery_worker"]
           envFrom:
-          {{- if .Values.keyvault.enabled }}
-          - secretRef:
-              name: {{ include "reporting.fullname" . }}-keyvault
-          {{- end }}
-          - configMapRef:
-              name: {{ include "reporting.fullname" . }}-backend
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "reporting.fullname" . }}-backend
           volumeMounts:
-          {{- if .Values.keyvault.enabled }}
-          - name: secrets-store01-inline
-            mountPath: {{ .Values.keyvault.mountPath }}
-            readOnly: true
-          {{- end }}
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
       volumes:
-      {{- if .Values.keyvault.enabled }}
-        - name: secrets-store01-inline
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: {{ include "reporting.fullname" . }}-secret-provider
-      {{- end }}
+        {{ include "keyvault.volumes" . | nindent 8 }}

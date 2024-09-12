@@ -25,28 +25,14 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
-          {{- if .Values.keyvault.enabled }}
-          - secretRef:
-              name: {{ include "reporting.fullname" . }}-keyvault
-          {{- end }}
-          - configMapRef:
-              name: {{ include "reporting.fullname" . }}-backend
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "reporting.fullname" . }}-backend
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-          {{- if .Values.keyvault.enabled }}
-          - name: secrets-store01-inline
-            mountPath: {{ .Values.keyvault.mountPath }}
-            readOnly: true
-          {{- end }}
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
       restartPolicy: Never
       volumes:
-      {{- if .Values.keyvault.enabled }}
-        - name: secrets-store01-inline
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: {{ include "reporting.fullname" . }}-secret-provider
-      {{- end }}
+        {{ include "keyvault.volumes" . | nindent 8 }}
   backoffLimit: 3

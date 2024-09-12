@@ -5,5 +5,8 @@ dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 13.1.5
-digest: sha256:cd71ed21571e94599df8991926ee168470955f10a0783de30894ff9263cb10bd
-generated: "2024-09-09T13:34:52.46517+02:00"
+- name: keyvault
+  repository: file://../keyvault
+  version: 0.1.0
+digest: sha256:0250e3c8514bef2282fc727e737a0e61bd58837e9c53c899c5012e2fdc296e35
+generated: "2024-09-12T13:37:37.016993+02:00"

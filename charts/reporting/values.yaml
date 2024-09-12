@@ -112,6 +112,7 @@ celery:
 keyvault:
   enabled: false
   mountPath: /mnt/secrets
+  secretName: "keyvault-secret"
 
 flower:
   enabled: false
