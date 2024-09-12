@@ -31,7 +31,8 @@ spec:
     objects: |
       array:
 {{- range .Values.keyvault.envMappings }}
-        - objectName: {{ .name }}
+        - |
+          objectName: {{ .name }}
           objectType: secret
           objectVersion: {{ .version | default "" }}
 {{- end }}
