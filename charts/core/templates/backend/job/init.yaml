@@ -48,21 +48,10 @@ spec:
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           volumeMounts:
-          {{- if .Values.keyvault.enabled }}
-          - name: {{ include "core.fullname" . }}-keyvault
-            mountPath: {{ .Values.keyvault.mountPath }}
-            readOnly: true
-          {{- end }}
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
       restartPolicy: Never
       volumes:
-      {{- if .Values.keyvault.enabled }}
-      - name: {{ include "core.fullname" . }}-keyvault
-        csi:
-          driver: secrets-store.csi.k8s.io
-          readOnly: true
-          volumeAttributes:
-            secretProviderClass: {{ include "core.fullname" . }}-secret-provider
-      {{- end }}
-      {{- include "core.scriptVolume" . | nindent 6 }}
+        {{ include "keyvault.volumes" . | nindent 8 }}
+        {{ include "core.scriptVolume" . | nindent 8 }}
   backoffLimit: 1
 {{- end -}}

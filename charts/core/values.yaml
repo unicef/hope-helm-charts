@@ -239,6 +239,7 @@ keyvault:
   enabled: false
   envMappings: []
   mountPath: /mnt/secrets
+  secretName: "keyvault-secret"
 
   # tenantId:
   # userAssignedIdentityID:

@@ -58,10 +58,7 @@ Common backend environment configuration
     name: {{ include "core.fullname" . }}-backend
 - configMapRef:
     name: {{ include "core.fullname" . }}-backend
-{{- if .Values.keyvault.enabled }}
-- secretRef:
-    name: {{ include "core.fullname" . }}-keyvault
-{{- end }}
+{{ include "keyvault.secretRef" . }}
 {{- end }}
 
 {{/*
@@ -117,7 +114,7 @@ Create the name of the service account to use
     - name: DATABASE_URL
       valueFrom:
         secretKeyRef:
-          name: {{ include "core.fullname" . }}-keyvault
+          name: {{ .Values.keyvault.secretName }}
           key: DATABASE_URL
     {{- end }}
 
@@ -155,22 +152,22 @@ Create the name of the service account to use
     - name: CELERY_BROKER_URL
       valueFrom:
         secretKeyRef:
-          name: {{ include "core.fullname" . }}-keyvault
+          name: {{ .Values.keyvault.secretName }}
           key: CELERY_BROKER_URL
     - name: CELERY_RESULT_BACKEND
       valueFrom:
         secretKeyRef:
-          name: {{ include "core.fullname" . }}-keyvault
+          name: {{ .Values.keyvault.secretName }}
           key: CELERY_RESULT_BACKEND
     - name: CACHE_LOCATION
       valueFrom:
         secretKeyRef:
-          name: {{ include "core.fullname" . }}-keyvault
+          name: {{ .Values.keyvault.secretName }}
           key: CACHE_LOCATION
     - name: CONSTANCE_REDIS_CONNECTION
       valueFrom:
         secretKeyRef:
-          name: {{ include "core.fullname" . }}-keyvault
+          name: {{ .Values.keyvault.secretName }}
           key: CONSTANCE_REDIS_CONNECTION
     {{- end }}
 
@@ -190,7 +187,7 @@ Create the name of the service account to use
     - name: ELASTICSEARCH_HOST
       valueFrom:
         secretKeyRef:
-          name: {{ include "core.fullname" . }}-keyvault
+          name: {{ .Values.keyvault.secretName }}
           key: ELASTICSEARCH_HOST
     {{- end }}
 {{- end -}}

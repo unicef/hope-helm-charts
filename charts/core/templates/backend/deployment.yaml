@@ -93,25 +93,14 @@ spec:
               mountPath: /data/staticserve
               readOnly: true
           {{- end }}
-          {{- if .Values.keyvault.enabled }}
-            - name: {{ include "core.fullname" . }}-keyvault
-              mountPath: {{ .Values.keyvault.mountPath }}
-              readOnly: true
-          {{- end }}
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
       volumes:
-      {{- include "core.scriptVolume" . | nindent 6 }}
+      {{- include "core.scriptVolume" . | nindent 8 }}
       {{- if .Values.nginx.enabled }}
-      - name: statics
-        emptyDir: {}
+        - name: statics
+          emptyDir: {}
       {{- end }}
-      {{- if .Values.keyvault.enabled }}
-      - name: {{ include "core.fullname" . }}-keyvault
-        csi:
-          driver: secrets-store.csi.k8s.io
-          readOnly: true
-          volumeAttributes:
-            secretProviderClass: {{ include "core.fullname" . }}-secret-provider
-      {{- end }}
+      {{ include "keyvault.volumes" . | nindent 8 }}
       {{ with .Values.backend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
