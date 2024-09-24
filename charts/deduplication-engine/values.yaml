@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 backend:
-  replicaCount: 2
+  replicaCount: 1
 
   service:
     type: ClusterIP
