@@ -1,0 +1,18 @@
+{{- if .Values.flower.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "deduplication-engine.fullname" . }}-celery-flower
+  labels:
+    {{- include "deduplication-engine.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.flower.service.type }}
+  ports:
+    - port: {{ .Values.flower.service.port }}
+      targetPort: {{ .Values.flower.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "deduplication-engine.selectorLabels" . | nindent 4 }}
+    deduplication-engine/service: celery-flower
+{{- end }}

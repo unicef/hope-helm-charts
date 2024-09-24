@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "deduplication-engine.fullname" . }}-backend
+  labels:
+    {{- include "deduplication-engine.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "deduplication-engine.selectorLabels" . | nindent 6 }}
+      service: "backend"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "deduplication-engine.selectorLabels" . | nindent 8 }}
+        service: "backend"
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
+      serviceAccountName: {{ include "deduplication-engine.serviceAccountName" . }}
+      containers:
+        - name: backend
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          args:
+            - "run"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "deduplication-engine.fullname" . }}-backend
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
