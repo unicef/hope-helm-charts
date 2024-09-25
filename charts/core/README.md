@@ -77,7 +77,7 @@ ingress:
     appgw.ingress.kubernetes.io/ssl-redirect: "true"
     appgw.ingress.kubernetes.io/appgw-ssl-certificate: name-of-your-cert
 
-ngingx:
+nginx:
   enabled: false
 ```
 
