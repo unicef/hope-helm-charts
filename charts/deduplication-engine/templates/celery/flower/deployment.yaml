@@ -47,6 +47,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.keyvault.secretName }}
                   key: FLOWER_BASIC_AUTH
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keyvault.secretName }}
+                  key: CELERY_BROKER_URL
             {{- end }}
           ports:
             - containerPort: 5555
