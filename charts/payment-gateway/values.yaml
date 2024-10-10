@@ -1,0 +1,38 @@
+global:
+  imagePullSecrets: []
+
+backend:
+  replicaCount: 1
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  autoscaling:
+    enabled: false
+
+celery:
+  autoscaling:
+    enabled: false
+
+image:
+  repository: unicef/hope-payment-gateway
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+keyvault:
+  enabled: false
+  envMappings: []
+  mountPath: /mnt/secrets
+  secretName: "keyvault-secret"
+
+serviceAccount:
+  create: false
+
+flower:
+  enabled: false
+  service:
+    port: 5555
+
+ingress:
+  enabled: true

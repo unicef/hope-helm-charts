@@ -1,0 +1,12 @@
+dependencies:
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 18.1.1
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 13.1.5
+- name: keyvault
+  repository: file://../keyvault
+  version: 0.1.3
+digest: sha256:60d8becfe0274ce76a7e2a62467ab350fe56640506f5deada60c13832fa75f30
+generated: "2024-10-09T15:18:41.426334+02:00"

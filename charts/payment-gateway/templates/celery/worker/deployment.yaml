@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "payment-gateway.fullname" . }}-celery-worker
+  labels:
+    {{- include "payment-gateway.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.celery.autoscaling.enabled }}
+  replicas: {{ .Values.celery.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "payment-gateway.selectorLabels" . | nindent 6 }}
+      service: "celery-worker"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "payment-gateway.selectorLabels" . | nindent 8 }}
+        service: "celery-worker"
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
+      serviceAccountName: {{ include "payment-gateway.serviceAccountName" . }}
+      containers:
+        - name: celery
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args: ["celery_worker"]
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "payment-gateway.fullname" . }}-backend
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+            {{- if .Values.keyvault.enabled }}
+            - name: tls-certs
+              readOnly: true
+              subPath: tls.crt
+              mountPath: /certs/tls.crt
+            - name: tls-certs
+              readOnly: true
+              subPath: tls.key
+              mountPath: /certs/tls.key
+            {{- end }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+        {{- if .Values.keyvault.enabled }}
+        - name: tls-certs
+          secret:
+            secretName: {{ .Values.keyvault.secretName | default "keyvault-secret" }}
+            items:
+              - key: TLS_CERT
+                path: tls.crt
+              - key: TLS_KEY
+                path: tls.key
+        {{- end }}

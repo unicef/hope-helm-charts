@@ -1,0 +1,60 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "payment-gateway.fullname" . }}-release
+  labels:
+    {{- include "payment-gateway.labels" . | nindent 4 }}
+    payment-gateway/job: upgrade
+  annotations:
+    "helm.sh/hook": pre-upgrade, post-install
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "payment-gateway.labels" . | nindent 8 }}
+        payment-gateway/job: upgrade
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-backend-release
+          command: ["sh"]
+          args:
+           - -c
+           - "python3 /code/manage.py upgrade"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "payment-gateway.fullname" . }}-backend
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+            {{- if .Values.keyvault.enabled }}
+            - name: tls-certs
+              readOnly: true
+              subPath: tls.crt
+              mountPath: /certs/tls.crt
+            - name: tls-certs
+              readOnly: true
+              subPath: tls.key
+              mountPath: /certs/tls.key
+            {{- end }}
+      restartPolicy: Never
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+        {{- if .Values.keyvault.enabled }}
+        - name: tls-certs
+          secret:
+            secretName: {{ .Values.keyvault.secretName | default "keyvault-secret" }}
+            items:
+              - key: TLS_CERT
+                path: tls.crt
+              - key: TLS_KEY
+                path: tls.key
+        {{- end }}
+  backoffLimit: 3
