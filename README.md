@@ -21,5 +21,9 @@ helm install <release-name> ./charts/<chart-name>
 
 Make sure to configure the necessary values for each chart.
 
+## Packaging
+
+Until it's not automatic, the new versions of charts can be released by calling `./scripts/package.sh <name-of-chart>`.
+
 ## Issues
 As this is freshly open-sourced, some features may be missing in the charts. Please open an issue for additional details or feature requests regarding the charts or the README.
