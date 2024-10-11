@@ -25,6 +25,10 @@ spec:
       imagePullSecrets:
         {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
       serviceAccountName: {{ include "payment-gateway.serviceAccountName" . }}
+      initContainers:
+        {{- if .Values.keyvault.enabled }}
+        {{ include "payment-gateway.decodeCerts" . | nindent 8 }}
+        {{- end }}
       containers:
         - name: backend
           securityContext:
@@ -32,7 +36,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
-          {{ include "keyvault.secretRef" . | nindent 12 }}
+            {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
                 name: {{ include "payment-gateway.fullname" . }}-backend
           ports:
@@ -44,24 +48,10 @@ spec:
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
             {{- if .Values.keyvault.enabled }}
-            - name: tls-certs
-              readOnly: true
-              subPath: tls.crt
-              mountPath: /certs/tls.crt
-            - name: tls-certs
-              readOnly: true
-              subPath: tls.key
-              mountPath: /certs/tls.key
+            {{ include "payment-gateway.tlsVolumeMounts" . | nindent 12 }}
             {{- end }}
       volumes:
         {{ include "keyvault.volumes" . | nindent 8 }}
         {{- if .Values.keyvault.enabled }}
-        - name: tls-certs
-          secret:
-            secretName: {{ .Values.keyvault.secretName | default "keyvault-secret" }}
-            items:
-              - key: TLS_CERT
-                path: tls.crt
-              - key: TLS_KEY
-                path: tls.key
+        {{ include "payment-gateway.tlsVolumes" . | nindent 8 }}
         {{- end }}

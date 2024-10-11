@@ -60,3 +60,41 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{- define "payment-gateway.decodeCerts" -}}
+- name: decode-certs
+  image: busybox
+  command:
+    - sh
+    - -c
+    - |
+      mkdir -p /certs
+      base64 -d /certs-encoded/tls.crt > /certs/tls.crt
+      base64 -d /certs-encoded/tls.key > /certs/tls.key
+  volumeMounts:
+    - name: tls-certs-encoded
+      mountPath: /certs-encoded
+    - name: tls-certs
+      mountPath: /certs
+{{- end }}
+
+{{- define "payment-gateway.tlsVolumes" -}}
+- name: tls-certs
+  emptyDir: {}
+
+- name: tls-certs-encoded
+  secret:
+    secretName: {{ .Values.keyvault.secretName | default "keyvault-secret" }}
+    items:
+      - key: TLS_CERT
+        path: tls.crt
+      - key: TLS_KEY
+        path: tls.key
+{{- end }}
+
+{{- define "payment-gateway.tlsVolumeMounts" -}}
+- name: tls-certs
+  mountPath: /certs
+  readOnly: true
+{{- end }}
