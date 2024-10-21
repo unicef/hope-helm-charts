@@ -1,0 +1,3 @@
+{{- if .Values.keyvault.enabled }}
+{{ include "keyvault.secretProviderClass" . }}
+{{- end }}

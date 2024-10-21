@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "workspace.fullname" . }}-release
+  labels:
+    {{- include "workspace.labels" . | nindent 4 }}
+    workspace/job: upgrade
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "workspace.labels" . | nindent 8 }}
+        workspace/job: upgrade
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-backend-release
+        #   command: ["/bin/bash"]
+        #   args: ["-c", "django-admin upgrade"]
+          args: ["django-admin", "upgrade"]
+        #   args: ["django-admin upgrade"]
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "workspace.fullname" . }}-backend
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+      restartPolicy: Never
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+  backoffLimit: 3
