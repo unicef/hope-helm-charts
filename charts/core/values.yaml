@@ -236,7 +236,7 @@ elasticsearch:
     replicaCount: 1
 
 keyvault:
-  enabled: false
+  enabled: true
   envMappings: []
   mountPath: /mnt/secrets
   secretName: "keyvault-secret"

@@ -21,7 +21,7 @@ image:
   tag: ""
 
 keyvault:
-  enabled: false
+  enabled: true
   envMappings: []
   mountPath: /mnt/secrets
   secretName: "keyvault-secret"
