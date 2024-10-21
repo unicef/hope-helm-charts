@@ -24,5 +24,9 @@ jobs:
             echo "Updating dependencies for chart: $chart"
             helm dependency update charts/$chart
             echo "Linting chart: $chart"
-            helm lint charts/$chart
+            helm lint charts/$chart \
+              --set keyvault.tenantId=foo \
+              --set keyvault.userAssignedIdentityID=bar \
+              --set keyvault.keyvaultName=baz \
+              --set keyvault.envMappings=null
           done
