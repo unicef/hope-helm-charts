@@ -110,7 +110,7 @@ celery:
   replicaCount: 1
 
 keyvault:
-  enabled: false
+  enabled: true
   mountPath: /mnt/secrets
   secretName: "keyvault-secret"
 
