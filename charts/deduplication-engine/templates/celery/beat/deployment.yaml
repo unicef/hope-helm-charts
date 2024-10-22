@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "deduplication-engine.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.celery.replicaCount }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "deduplication-engine.selectorLabels" . | nindent 6 }}
