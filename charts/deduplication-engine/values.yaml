@@ -87,7 +87,7 @@ flower:
     port: 5555
 
 keyvault:
-  enabled: false
+  enabled: true
   envMappings: []
   mountPath: /mnt/secrets
   secretName: "keyvault-secret"

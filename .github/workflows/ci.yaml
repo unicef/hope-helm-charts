@@ -1,0 +1,32 @@
+name: Helm Chart CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+
+      - name: Loop through all charts and run linter
+        run: |
+          for chart in $(ls charts); do
+            echo "Updating dependencies for chart: $chart"
+            helm dependency update charts/$chart
+            echo "Linting chart: $chart"
+            helm lint charts/$chart \
+              --set keyvault.tenantId=foo \
+              --set keyvault.userAssignedIdentityID=bar \
+              --set keyvault.keyvaultName=baz \
+              --set keyvault.envMappings=null
+          done
