@@ -28,3 +28,6 @@ flower:
   service:
     type: ClusterIP
     port: 5555
+
+celery:
+  replicaCount: 1

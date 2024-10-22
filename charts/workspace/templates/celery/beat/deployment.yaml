@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "workspace.fullname" . }}-celery-beat
+  labels:
+    {{- include "workspace.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "workspace.selectorLabels" . | nindent 6 }}
+      service: "celery-beat"
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "workspace.selectorLabels" . | nindent 8 }}
+        service: "celery-beat"
+    spec:
+      containers:
+        - name: celery
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args: ["beat"]
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "workspace.fullname" . }}-backend
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
