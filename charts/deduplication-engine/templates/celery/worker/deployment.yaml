@@ -14,9 +14,12 @@ spec:
       service: "celery-worker"
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.rollme.enabled }}
+        rollme: {{ randAlphaNum 5 | quote }}
       {{- end }}
       labels:
         {{- include "deduplication-engine.selectorLabels" . | nindent 8 }}

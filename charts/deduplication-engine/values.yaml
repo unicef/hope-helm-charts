@@ -91,3 +91,6 @@ keyvault:
   envMappings: []
   mountPath: /mnt/secrets
   secretName: "keyvault-secret"
+
+rollme:
+  enabled: false
