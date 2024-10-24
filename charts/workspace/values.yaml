@@ -31,3 +31,11 @@ flower:
 
 celery:
   replicaCount: 1
+
+keyvault:
+  enabled: true
+  mountPath: /mnt/secrets
+  secretName: "keyvault-secret"
+
+rollme:
+  enabled: false
