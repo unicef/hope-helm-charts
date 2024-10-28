@@ -1,3 +1,7 @@
+global:
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
 backend:
   replicaCount: 1
 
