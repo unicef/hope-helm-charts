@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "workspace.fullname" . }}-celery-worker
+  labels:
+    {{- include "workspace.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.celery.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "workspace.selectorLabels" . | nindent 6 }}
+      service: "celery-worker"
+  template:
+    metadata:
+      annotations:
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.rollme.enabled }}
+        rollme: {{ randAlphaNum 5 | quote }}
+      {{- end }}
+      labels:
+        {{- include "workspace.selectorLabels" . | nindent 8 }}
+        service: "celery-worker"
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
+      serviceAccountName: {{ include "workspace.serviceAccountName" . }}
+      containers:
+        - name: celery
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args: ["worker"]
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "workspace.fullname" . }}-backend
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}

@@ -1,0 +1,48 @@
+global:
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+backend:
+  replicaCount: 1
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  config: {}
+
+image:
+  repository: unicef/hope-country-workspace
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+flower:
+  enabled: false
+
+  service:
+    type: ClusterIP
+    port: 5555
+
+celery:
+  replicaCount: 1
+
+keyvault:
+  enabled: true
+  mountPath: /mnt/secrets
+  secretName: "keyvault-secret"
+
+rollme:
+  enabled: false
+
+serviceAccount:
+  create: false

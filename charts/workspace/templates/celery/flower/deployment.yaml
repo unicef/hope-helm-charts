@@ -1,0 +1,68 @@
+{{- if .Values.flower.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "workspace.fullname" . }}-celery-flower
+  labels:
+    {{- include "workspace.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "workspace.selectorLabels" . | nindent 6 }}
+      workspace/service: celery-flower
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.flower.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "workspace.selectorLabels" . | nindent 8 }}
+        workspace/service: celery-flower
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "workspace.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.flower.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-celery-flower
+          securityContext:
+            {{- toYaml .Values.flower.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          args: ["flower"]
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "workspace.fullname" . }}-backend
+          # TODO: as long as DATABASE_URL is required in the app to run flower,
+          # the line below will be necessary
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+          env:
+            - name: FLOWER_URL_PREFIX
+              value: flower
+          ports:
+            - containerPort: 5555
+              name: http
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.flower.resources | nindent 12 }}
+      {{- with .Values.flower.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flower.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flower.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+{{- end }}
