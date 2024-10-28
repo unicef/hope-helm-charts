@@ -43,3 +43,6 @@ keyvault:
 
 rollme:
   enabled: false
+
+serviceAccount:
+  create: false
