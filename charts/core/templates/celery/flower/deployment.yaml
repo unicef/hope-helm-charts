@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "core.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.flower.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "core.selectorLabels" . | nindent 6 }}
@@ -14,9 +14,9 @@ spec:
   template:
     metadata:
       annotations:
-    {{- if .Values.flower.podAnnotations }}
-        {{- toYaml .Values.flower.podAnnotations | nindent 8 }}
-    {{- end }}
+        {{- with .Values.flower.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "core.selectorLabels" . | nindent 8 }}
         core/service: celery-flower
@@ -26,39 +26,38 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "core.serviceAccountName" . }}
-      volumes:
-      - configMap:
-          defaultMode: 511
-          name: {{ include "core.fullname" . }}-flower-entrypoint
-        name: entrypoint
+      securityContext:
+        {{- toYaml .Values.flower.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}-celery-flower
           securityContext:
             {{- toYaml .Values.flower.securityContext | nindent 12 }}
-          image: "{{ .Values.flower.image }}"
+          image: "{{ include "core.backend.image" . }}"
+          command: ["celery", "flower", "-A", "hct_mis_api.apps.core.celery", "--address=0.0.0.0", "--broker=$CELERY_BROKER_URL"]
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.flower.service.port }}
-              protocol: TCP
           envFrom:
-          - secretRef:
-              name: {{ include "core.fullname" . }}-flower
-          - configMapRef:
-              name: {{ include "core.fullname" . }}-flower
+            - configMapRef:
+                name: {{ include "core.fullname" . }}-backend
+          env:
+            - name: FLOWER_URL_PREFIX
+              value: flower
+            {{- if .Values.keyvault.enabled }}
+            - name: FLOWER_BASIC_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keyvault.secretName }}
+                  key: FLOWER_BASIC_AUTH
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keyvault.secretName }}
+                  key: CELERY_BROKER_URL
+            {{- end }}
+          ports:
+            - containerPort: 5555
+              name: http
           volumeMounts:
-          - name: entrypoint
-            mountPath: /entrypoint.sh
-            subPath: entrypoint.sh
-          readinessProbe:
-            httpGet:
-              path: /_health
-              port: {{ .Values.flower.service.port }}
-              httpHeaders:
-              - name: X-Health
-                value:  "Kubernetes-Health"
-              - name: Host
-                value: "kubernetes.internal"
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
           resources:
             {{- toYaml .Values.flower.resources | nindent 12 }}
       {{- with .Values.flower.nodeSelector }}
@@ -73,4 +72,6 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
 {{- end }}

@@ -47,7 +47,7 @@ flower:
   affinity: {}
   service:
     type: ClusterIP
-    port: 8000
+    port: 5555
 
   config:
     FLOWER_URL_PREFIX: flower
