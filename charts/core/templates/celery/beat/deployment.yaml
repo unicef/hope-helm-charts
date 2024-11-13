@@ -12,8 +12,9 @@ spec:
       core/service: celery-beat
   template:
     metadata:
-      {{- with .Values.celery.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/backend/configmap.yaml") . | sha256sum }}
+      {{- with .Values.celery.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
