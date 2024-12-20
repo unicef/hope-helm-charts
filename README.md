@@ -21,9 +21,11 @@ helm install <release-name> ./charts/<chart-name>
 
 Make sure to configure the necessary values for each chart.
 
-## Packaging
+## Releasing new chart version
 
-Until it's not automatic, the new versions of charts can be released by calling `./scripts/package.sh <name-of-chart>`.
+1. Bump chart version manually in `Chart.yaml` file within the chart folder.
+2. Release new version with `./scripts/package.sh <name-of-chart>`.
+3. Bump used chart version to the new one in deployment pipeline configuration.
 
 ## Issues
 As this is freshly open-sourced, some features may be missing in the charts. Please open an issue for additional details or feature requests regarding the charts or the README.
