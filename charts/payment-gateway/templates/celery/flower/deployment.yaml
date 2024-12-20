@@ -33,7 +33,7 @@ spec:
           securityContext:
             {{- toYaml .Values.flower.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          args: [celery_flower]
+          args: [flower]
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           envFrom:
             - configMapRef:
