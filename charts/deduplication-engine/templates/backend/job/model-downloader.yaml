@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-backend-model-downloader
-          args: ["download_model"]
+          args: ["syncmodels"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -39,5 +39,4 @@ spec:
         - name: dde-model-data
           persistentVolumeClaim:
             claimName: {{ include "deduplication-engine.fullname" . }}-model-data
-            readOnly: true
   backoffLimit: 3
