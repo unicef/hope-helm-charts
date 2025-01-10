@@ -1,24 +1,24 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "deduplication-engine.fullname" . }}-release
+  name: {{ include "deduplication-engine.fullname" . }}-model-downloader
   labels:
     {{- include "deduplication-engine.labels" . | nindent 4 }}
-    deduplication-engine/job: upgrade
+    deduplication-engine/job: model-downloader
   annotations:
     "helm.sh/hook": pre-upgrade, post-install
-    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-weight": "5"
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   template:
     metadata:
       labels:
         {{- include "deduplication-engine.labels" . | nindent 8 }}
-        deduplication-engine/job: upgrade
+        deduplication-engine/job: model-downloader
     spec:
       containers:
-        - name: {{ .Chart.Name }}-backend-release
-          args: ["setup"]
+        - name: {{ .Chart.Name }}-backend-model-downloader
+          args: ["syncmodels"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -31,7 +31,12 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
+            - name: dde-model-data
+              mountPath: /dde-model
       restartPolicy: Never
       volumes:
         {{ include "keyvault.volumes" . | nindent 8 }}
+        - name: dde-model-data
+          persistentVolumeClaim:
+            claimName: {{ include "deduplication-engine.fullname" . }}-model-data
   backoffLimit: 3
