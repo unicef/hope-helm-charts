@@ -1,0 +1,47 @@
+{{- if and .Values.resetDatabase.enabled (ne .Values.global.env "prod") }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "deduplication-engine.fullname" . }}-reset-database
+  labels:
+    {{- include "deduplication-engine.labels" . | nindent 4 }}
+    deduplication-engine/job: reset-database
+  annotations:
+    "helm.sh/hook": pre-upgrade, post-install
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "deduplication-engine.labels" . | nindent 8 }}
+        deduplication-engine/job: reset-database
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-reset-database
+          image: postgres:14.3
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "deduplication-engine.fullname" . }}-backend
+          env:
+          - name: DATABASE_USERNAME
+            value: "{{ .Values.resetDatabase.username }}"
+          - name: DATABASE_NAME
+            value: "{{ .Values.resetDatabase.database }}"
+          command: ["sh", "-c"]
+          args:
+          - |
+            DATABASE_URL=$(echo "$DATABASE_URL" | sed "s/$DATABASE_NAME/postgres/")
+            psql "$DATABASE_URL" <<EOF
+            DROP DATABASE $DATABASE_NAME;
+            CREATE DATABASE $DATABASE_NAME;
+            GRANT ALL PRIVILEGES ON DATABASE $DATABASE_NAME TO $DATABASE_USERNAME;
+            EOF
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+      restartPolicy: Never
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+  backoffLimit: 1
+{{- end }}

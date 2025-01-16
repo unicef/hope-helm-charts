@@ -94,3 +94,7 @@ keyvault:
 
 rollme:
   enabled: false
+
+resetDatabase:
+  enabled: false
+  database: ""
