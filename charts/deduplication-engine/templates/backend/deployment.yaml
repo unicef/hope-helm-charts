@@ -36,7 +36,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           args:
             - "run"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           envFrom:
           {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
