@@ -24,9 +24,9 @@ version: 0.7.0
 appVersion: "develop"
 
 dependencies:
-  - name: valkey
-    version: 2.2.4
-    repository: oci://registry-1.docker.io/bitnamicharts
+  - name: redis
+    version: 18.1.1
+    repository: https://charts.bitnami.com/bitnami
     condition: redis.enabled
   - name: keyvault
     version: 0.1.3

@@ -24,9 +24,9 @@ version: 0.3.3
 appVersion: "payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d"
 
 dependencies:
-  - name: valkey
-    version: 2.2.4
-    repository: oci://registry-1.docker.io/bitnamicharts
+  - name: redis
+    version: 18.1.1
+    repository: https://charts.bitnami.com/bitnami
     condition: redis.enabled
   - name: postgresql
     version: 13.1.5
