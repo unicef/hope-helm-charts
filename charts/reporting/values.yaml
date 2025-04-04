@@ -145,3 +145,6 @@ postgresql:
       scripts:
         init.sql: |
           CREATE EXTENSION IF NOT EXISTS postgis;
+
+rollme:
+  enabled: false

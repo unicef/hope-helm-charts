@@ -19,6 +19,9 @@ spec:
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.rollme.enabled }}
+        rollme: {{ randAlphaNum 5 | quote }}
+      {{- end }}
       labels:
         {{- include "reporting.selectorLabels" . | nindent 8 }}
         service: "backend"
