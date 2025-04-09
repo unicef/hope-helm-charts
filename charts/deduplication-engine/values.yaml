@@ -76,7 +76,7 @@ volumeMounts: []
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
-redis:
+valkey:
   enabled: true
 
 flower:
