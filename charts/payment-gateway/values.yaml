@@ -39,3 +39,6 @@ flower:
 
 ingress:
   enabled: true
+
+valkey:
+  enabled: true
