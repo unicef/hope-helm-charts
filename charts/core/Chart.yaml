@@ -33,7 +33,7 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: valkey.enabled
   - name: elasticsearch
-    version: "21.x.x"
+    version: 21.4.8
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: elasticsearch.enabled
   - name: keyvault
