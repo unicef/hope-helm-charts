@@ -191,3 +191,20 @@ Create the name of the service account to use
           key: ELASTICSEARCH_HOST
     {{- end }}
 {{- end -}}
+
+{{- define "databaseSslCertificate.volumes" -}}
+{{- if .Values.databaseSslCertificate.enabled }}
+- name: db-ssl-cert-volume
+  configMap:
+    name: {{ include "core.fullname" . }}-db-ssl-cert
+{{- end }}
+{{- end -}}
+
+{{- define "databaseSslCertificate.volumeMounts" -}}
+{{- if .Values.databaseSslCertificate.enabled }}
+- name: db-ssl-cert-volume
+  mountPath: /data/psql-cert.crt
+  subPath: psql-cert.crt
+  readOnly: true
+{{- end }}
+{{- end -}}
