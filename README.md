@@ -3,7 +3,9 @@
 This repository contains Helm charts for deploying components of the HOPE project. The currently supported charts are:
 - **Core**: Main infrastructure and application services.
 - **Deduplication Engine**: Service to handle data deduplication.
+- **Payment Gateway**: Service to integrate core service with FSPs.
 - **Reporting**: Reporting services for data analytics.
+- **Workspace**: Service managing data imports and beneficiaries.
 
 ## Prerequisites
 - Kubernetes Cluster (Tested on AKS)
@@ -14,6 +16,11 @@ This repository contains Helm charts for deploying components of the HOPE projec
 Typically, Azure KeyVault is used to retrieve secrets in deployments, but it is not a strict requirement. The charts use the [Secrets Store CSI Driver](https://secrets-store-csi-driver.sigs.k8s.io/) to communicate with Azure KeyVault for secure secret management across different services.
 
 ## Usage
+Add Helm repo:
+```bash
+helm repo add hope https://unicef.github.io/hope-helm-charts
+```
+
 Deploy the charts using Helm:
 ```bash
 helm install <release-name> ./charts/<chart-name>

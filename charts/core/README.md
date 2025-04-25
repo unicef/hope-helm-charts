@@ -1,13 +1,14 @@
 # HOPE Core Helm Chart
 
-This is the helm chart for the HOPE core service - [https://github.com/unicef/hct-mis](https://github.com/unicef/hct-mis)
+This is the helm chart for the HOPE core service - [https://github.com/unicef/hope](https://github.com/unicef/hope).
 
 ## Installation
 
 To install the chart, you can use the following command:
 
 ```bash
-helm install core https://unicef.github.io/hope-helm-charts/ -f values.yaml --timeout 10m0s
+helm repo add hope https://unicef.github.io/hope-helm-charts
+helm install hope/core -f values.yaml --timeout 10m0s
 ```
 
 You should set the timeout to 10m because 5m (default) can be not enough in a default setup - tested in AKS cluster.
