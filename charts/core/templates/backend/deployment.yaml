@@ -95,6 +95,7 @@ spec:
               readOnly: true
           {{- end }}
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
+            {{ include "databaseSslCertificate.volumeMounts" . | nindent 12 }}
       volumes:
       {{- include "core.scriptVolume" . | nindent 8 }}
       {{- if .Values.nginx.enabled }}
@@ -102,6 +103,7 @@ spec:
           emptyDir: {}
       {{- end }}
       {{ include "keyvault.volumes" . | nindent 8 }}
+      {{ include "databaseSslCertificate.volumes" . | nindent 8 }}
       {{ with .Values.backend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
