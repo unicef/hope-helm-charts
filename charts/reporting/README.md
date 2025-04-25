@@ -1,13 +1,14 @@
 # HOPE Reporting Helm Chart
 
-This Helm chart is used to deploy the HOPE reporting service. The reporting service depends on the HOPE core service and requires access to its database. Additionally, it needs a valid Azure SAS token to function correctly.
+This Helm chart is used to deploy the HOPE reporting service - [https://github.com/unicef/hope-country-report](https://github.com/unicef/hope-country-report). The reporting service depends on the HOPE core service and requires access to its database. Additionally, it needs a valid Azure SAS token to function correctly.
 
 ## Installation
 
 To install the reporting service, use the following command:
 
 ```bash
-helm install reporting https://unicef.github.io/hope-helm-charts/ -f values.yaml
+helm repo add hope https://unicef.github.io/hope-helm-charts
+helm install hope/reporting -f values.yaml
 ```
 
 Ensure the HOPE core service is running and accessible before deploying the reporting service.
