@@ -1,6 +1,6 @@
 # HOPE Core Helm Chart
 
-This is the helm chart for the HOPE core service - [https://github.com/unicef/hct-mis](https://github.com/unicef/hct-mis)
+This is the helm chart for the HOPE core service - [https://github.com/unicef/hope](https://github.com/unicef/hope)
 
 ## Installation
 
@@ -82,3 +82,18 @@ nginx:
 ```
 
 By default, nginx is enabled and ingress disabled, meaning that the service will be exposed internally only.
+
+
+### Database SSL certificate
+
+When Postgres is used as database, depending on the provider you may need to pass an SSL certificate that will be used for the database connection.
+
+It can be enabled and set in PEM format inside of values:
+```yaml
+databaseSslCertificate: 
+  enabled: true
+  certificate: |
+    -----BEGIN CERTIFICATE-----
+    YOUR_SSL_CERTIFICATE_CONTENTS
+    -----END CERTIFICATE-----
+```
