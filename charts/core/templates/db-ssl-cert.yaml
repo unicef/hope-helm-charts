@@ -1,0 +1,10 @@
+{{- if .Values.databaseSslCertificate.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "core.fullname" . }}-db-ssl-cert
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+data:
+  psql-cert.crt: {{ .Values.databaseSslCertificate.certificate | toYaml | indent 2 }}
+{{- end }}
