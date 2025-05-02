@@ -227,6 +227,9 @@ valkey:
   auth:
     enabled: false
 
+prometheus-redis-exporter:
+  redisAddress: ""
+
 elasticsearch:
   enabled: true
   plugins: "analysis-phonetic,analysis-icu"
