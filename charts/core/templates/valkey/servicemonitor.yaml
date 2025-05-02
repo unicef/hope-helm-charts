@@ -1,0 +1,16 @@
+{{- if .Values.valkey.enabled -}}
+apiVersion: azmonitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "core.fullname" . }}-valkey-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-redis-exporter
+  labelLimit: 63
+  labelNameLengthLimit: 511
+  labelValueLengthLimit: 1023
+  endpoints:
+  - interval: 5s
+    path: /metrics
+{{- end }}
