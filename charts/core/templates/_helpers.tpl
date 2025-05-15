@@ -118,7 +118,7 @@ Create the name of the service account to use
           key: DATABASE_URL
     {{- end }}
 
-    {{- if .Values.valkey.enabled }}
+    {{- if .Values.redis.enabled }}
     - name: CELERY_BROKER_URL
       valueFrom:
         secretKeyRef:
