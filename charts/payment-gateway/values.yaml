@@ -40,5 +40,5 @@ flower:
 ingress:
   enabled: true
 
-valkey:
+redis:
   enabled: true

@@ -121,7 +121,7 @@ flower:
     type: ClusterIP
     port: 5555
 
-valkey:
+redis:
   auth:
     enabled: false
 

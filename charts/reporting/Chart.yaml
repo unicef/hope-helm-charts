@@ -6,10 +6,10 @@ version: 0.10.0
 appVersion: "country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9"
 
 dependencies:
-  - name: valkey
-    version: 2.2.4
+  - name: redis
+    version: 18.19.4
     repository: oci://registry-1.docker.io/bitnamicharts
-    condition: valkey.enabled
+    condition: redis.enabled
   - name: postgresql
     version: 13.1.5
     repository: https://charts.bitnami.com/bitnami

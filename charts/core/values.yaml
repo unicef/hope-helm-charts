@@ -219,7 +219,7 @@ postgresql:
           GRANT ALL ON SCHEMA public TO hopeuser;
           ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO hopeuser;
 
-valkey:
+redis:
   enabled: true
 
   architecture: standalone

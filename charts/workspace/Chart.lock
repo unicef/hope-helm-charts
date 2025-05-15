@@ -1,12 +1,12 @@
 dependencies:
-- name: valkey
+- name: redis
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 2.2.4
+  version: 18.19.4
 - name: keyvault
   repository: file://../keyvault
   version: 0.1.3
 - name: postgresql
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 14.3.3
-digest: sha256:a997233b1e5562ed82dba74916eca6ece0b470af0bb3c6a3b0e79adfcf2d91ff
-generated: "2025-03-17T13:07:07.388572Z"
+digest: sha256:990372c5c9fb9b1700ae11e841fa3dc7afd2ac828fb7e108af32118919915aca
+generated: "2025-05-12T15:04:11.07897+02:00"

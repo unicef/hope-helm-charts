@@ -10,10 +10,10 @@ dependencies:
     version: "14.x.x"
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
-  - name: valkey
-    version: 2.2.4
+  - name: redis
+    version: 18.19.4
     repository: oci://registry-1.docker.io/bitnamicharts
-    condition: valkey.enabled
+    condition: redis.enabled
   - name: elasticsearch
     version: 21.4.8
     repository: oci://registry-1.docker.io/bitnamicharts

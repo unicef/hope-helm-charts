@@ -32,11 +32,11 @@ DB_PORT=$(echo $DATABASE_URL | sed -n "s|.*:\([0-9]\+\)/.*|\1|p")
 
 retry $MAX_RETRIES $RETRY_INTERVAL "pg_isready -h $DB_HOST -p $DB_PORT"
 
-# Extract VALKEY_HOST and VALKEY_PORT handling possible @ in the password
-VALKEY_HOST=$(echo $CELERY_BROKER_URL | rev | sed -e "s|@.*||" | rev | sed -e "s|.*://||" -e "s|:.*||")
-VALKEY_PORT=$(echo $CELERY_BROKER_URL | sed -n "s|.*:\([0-9]\+\)/.*|\1|p")
+# Extract REDIS_HOST and REDIS_PORT handling possible @ in the password
+REDIS_HOST=$(echo $CELERY_BROKER_URL | rev | sed -e "s|@.*||" | rev | sed -e "s|.*://||" -e "s|:.*||")
+REDIS_PORT=$(echo $CELERY_BROKER_URL | sed -n "s|.*:\([0-9]\+\)/.*|\1|p")
 
-retry $MAX_RETRIES $RETRY_INTERVAL "nc -zv $VALKEY_HOST $VALKEY_PORT"
+retry $MAX_RETRIES $RETRY_INTERVAL "nc -zv $REDIS_HOST $REDIS_PORT"
 
 # Extract ES_HOST and ES_PORT handling possible @ in the password
 ES_HOST=$(echo $ELASTICSEARCH_HOST | rev | sed -e "s|@.*||" | rev | sed -e "s|.*://||" -e "s|:.*||")
