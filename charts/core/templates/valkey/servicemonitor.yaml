@@ -1,8 +1,8 @@
-{{- if .Values.valkey.enabled -}}
+{{- if .Values.redis.enabled -}}
 apiVersion: azmonitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "core.fullname" . }}-valkey-exporter
+  name: {{ include "core.fullname" . }}-redis-exporter
 spec:
   selector:
     matchLabels:
