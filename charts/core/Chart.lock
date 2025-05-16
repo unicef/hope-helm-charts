@@ -14,5 +14,5 @@ dependencies:
 - name: keyvault
   repository: file://../keyvault
   version: 0.1.3
-digest: sha256:84d8410e76f56200f5f7daaa00a39dc3774d80a41bd9986eaca9b02904974cf0
-generated: "2025-05-12T15:31:11.616562+02:00"
+digest: sha256:8ab7dec65064849f5bc766118d298ef70c7310d874a94f02ad93698ba2722348
+generated: "2025-05-16T13:16:55.660935+02:00"
