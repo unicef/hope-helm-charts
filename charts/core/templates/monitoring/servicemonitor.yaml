@@ -1,4 +1,4 @@
-{{- if .Values.redis.enabled -}}
+{{- if and .Values.redis.enabled .Values.monitoring.enabled -}}
 apiVersion: azmonitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
