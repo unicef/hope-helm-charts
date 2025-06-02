@@ -250,3 +250,6 @@ keyvault:
 databaseSslCertificate:
   enabled: false
   certificate: ""
+
+monitoring:
+  enabled: true
