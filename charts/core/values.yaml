@@ -249,9 +249,5 @@ keyvault:
   # tenantId:
   # userAssignedIdentityID:
 
-databaseSslCertificate:
-  enabled: false
-  certificate: ""
-
 monitoring:
   enabled: true
