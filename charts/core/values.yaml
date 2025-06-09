@@ -228,6 +228,8 @@ redis:
     enabled: false
 
 prometheus-redis-exporter:
+  enabled: true
+
   redisAddress: ""
 
 elasticsearch:
