@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0 (2025-06-10)
+* Added value to enable/disable Redis Prometheus Exporter 
+* Removed database SSL certificates
+
 ## 0.8.0 (2025-06-02)
 * Added value to toggle monitoring resources creation
 
