@@ -228,6 +228,8 @@ redis:
     enabled: false
 
 prometheus-redis-exporter:
+  enabled: true
+
   redisAddress: ""
 
 elasticsearch:
@@ -246,10 +248,6 @@ keyvault:
 
   # tenantId:
   # userAssignedIdentityID:
-
-databaseSslCertificate:
-  enabled: false
-  certificate: ""
 
 monitoring:
   enabled: true
