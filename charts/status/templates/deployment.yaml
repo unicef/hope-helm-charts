@@ -13,6 +13,9 @@ spec:
       {{- include "status.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
@@ -43,19 +46,11 @@ spec:
           envFrom:
           {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
-                name: {{ include "status.fullname" . }}-aurora
+                name: {{ include "status.fullname" . }}-status
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.deployment.port }}
               protocol: TCP
-          {{- with .Values.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

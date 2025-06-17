@@ -28,6 +28,9 @@ podSecurityContext: {}
 
 securityContext: {}
 
+deployment:
+  port: 8000
+
 service:
   type: ClusterIP
   port: 80
