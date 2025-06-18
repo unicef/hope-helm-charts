@@ -5,6 +5,7 @@ This repository contains Helm charts for deploying components of the HOPE projec
 - **Deduplication Engine**: Service to handle data deduplication.
 - **Payment Gateway**: Service to integrate core service with FSPs.
 - **Reporting**: Reporting services for data analytics.
+- **Status**: Service for status monitoring of other services.
 - **Workspace**: Service managing data imports and beneficiaries.
 
 ## Prerequisites
