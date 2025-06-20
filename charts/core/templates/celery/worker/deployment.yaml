@@ -38,23 +38,9 @@ spec:
       volumes:
       {{- include "core.scriptVolume" . | nindent 6 }}
       containers:
-        - name: {{ .Chart.Name }}-celery-worker-low-priority
+        - name: {{ .Chart.Name }}-celery-worker
           args:
-            - celery -A hct_mis_api.apps.core.celery worker -n low-priority-$HOSTNAME -E -l info --max-tasks-per-child=4 -Q default
-          command:
-            - sh
-            - -c
-          securityContext:
-            {{- toYaml .Values.celery.securityContext | nindent 12 }}
-          image: "{{ include "core.backend.image" . }}"
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
-          envFrom:
-          {{- include "core.backend.envConfig" . | nindent 10 }}
-          resources:
-            {{- toYaml .Values.celery.resources | nindent 12 }}
-        - name: {{ .Chart.Name }}-celery-worker-high-priority
-          args:
-            - celery -A hct_mis_api.apps.core.celery worker  -n high-priority-$HOSTNAME  -E -l info --max-tasks-per-child=4 -Q priority
+            - celery -A hct_mis_api.apps.core.celery worker -n $HOSTNAME -E -l info --max-tasks-per-child=4 -Q default
           command:
             - sh
             - -c
