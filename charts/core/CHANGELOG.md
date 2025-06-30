@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.0 (2025-06-30)
+* Updated celery configuration with just 1 container and 1 task queue
+
 ## 0.9.0 (2025-06-10)
 * Added value to enable/disable Redis Prometheus Exporter 
 * Removed database SSL certificates
