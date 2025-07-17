@@ -1,6 +1,7 @@
 # HOPE Helm Charts
 
 This repository contains Helm charts for deploying components of the HOPE project. The currently supported charts are:
+- **Aurora**: Beneficiary Data collection tool
 - **Core**: Main infrastructure and application services.
 - **Deduplication Engine**: Service to handle data deduplication.
 - **Payment Gateway**: Service to integrate core service with FSPs.
