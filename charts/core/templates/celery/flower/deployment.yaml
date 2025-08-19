@@ -33,7 +33,7 @@ spec:
           securityContext:
             {{- toYaml .Values.flower.securityContext | nindent 12 }}
           image: "{{ include "core.backend.image" . }}"
-          command: ["celery", "flower", "-A", "hct_mis_api.apps.core.celery", "--address=0.0.0.0", "--broker=$CELERY_BROKER_URL"]
+          command: ["celery", "flower", "-A", "hope.apps.core.celery", "--address=0.0.0.0", "--broker=$CELERY_BROKER_URL"]
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           envFrom:
             - configMapRef:
