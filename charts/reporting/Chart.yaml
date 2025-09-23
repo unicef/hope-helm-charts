@@ -7,7 +7,7 @@ appVersion: "country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9"
 
 dependencies:
   - name: redis
-    version: 18.19.4
+    version: 22.0.7
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: redis.enabled
   - name: postgresql

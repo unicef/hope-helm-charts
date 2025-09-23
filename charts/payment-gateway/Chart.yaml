@@ -7,7 +7,7 @@ appVersion: "payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d"
 
 dependencies:
   - name: redis
-    version: 18.19.4
+    version: 22.0.7
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: redis.enabled
   - name: postgresql

@@ -8,7 +8,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: keyvault.enabled
       name: keyvault
       repository: file://../keyvault
@@ -36,7 +36,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: prometheus-redis-exporter.enabled
       name: prometheus-redis-exporter
       repository: https://prometheus-community.github.io/helm-charts
@@ -67,7 +67,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: prometheus-redis-exporter.enabled
       name: prometheus-redis-exporter
       repository: https://prometheus-community.github.io/helm-charts
@@ -98,7 +98,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: redis.enabled
       name: prometheus-redis-exporter
       repository: https://prometheus-community.github.io/helm-charts
@@ -129,7 +129,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: redis.enabled
       name: prometheus-redis-exporter
       repository: https://prometheus-community.github.io/helm-charts
@@ -419,7 +419,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: keyvault.enabled
       name: keyvault
       repository: file://../keyvault
@@ -705,7 +705,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: postgresql.enabled
       name: postgresql
       repository: https://charts.bitnami.com/bitnami
@@ -913,7 +913,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: postgresql.enabled
       name: postgresql
       repository: https://charts.bitnami.com/bitnami
@@ -936,7 +936,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: postgresql.enabled
       name: postgresql
       repository: https://charts.bitnami.com/bitnami
@@ -1284,7 +1284,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: keyvault.enabled
       name: keyvault
       repository: file://../keyvault
@@ -1304,7 +1304,7 @@ entries:
     - condition: redis.enabled
       name: redis
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 18.19.4
+      version: 22.0.7
     - condition: keyvault.enabled
       name: keyvault
       repository: file://../keyvault
