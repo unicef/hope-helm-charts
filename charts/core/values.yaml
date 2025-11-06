@@ -99,7 +99,7 @@ backend:
     CSP_FONT_SRC: "'self',data:,fonts.gstatic.com,maxcdn.bootstrapcdn.com"
     CSP_MEDIA_SRC: "'self'"
     CSP_CONNECT_SRC: "sentry.io,gov-bam.nr-data.net,cdn.jsdelivr.net"
-    PROFILING: off
+    PROFILING: "'off'"
 
   replicaCount: 2
 
