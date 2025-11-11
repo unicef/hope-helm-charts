@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.11.0 (2025-11-11)
+* removed hct_mis_api references
+
 ## 0.10.0 (2025-06-30)
 * Updated celery configuration with just 1 container and 1 task queue
 
