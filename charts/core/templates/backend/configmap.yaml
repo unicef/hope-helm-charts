@@ -9,7 +9,7 @@ data:
   DJANGO_ALLOWED_HOSTS: "kubernetes.internal,{{ .Values.ingress.host }},{{ include "core.fullname" . }}-backend"
   DOMAIN: "{{ .Values.ingress.host }}"
 {{- range $key, $value :=  .Values.backend.config }}
-  {{ - if eq (default "" $value) "" }}
+  {{- if eq (default "" $value) "" }}
   {{- else }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}
