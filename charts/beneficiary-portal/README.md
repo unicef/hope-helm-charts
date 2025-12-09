@@ -1,4 +1,4 @@
-# HOPE Deduplication Engine Helm Chart
+# HOPE Benificiery Portal Helm Chart
 
 This is the helm chart for the HOPE deduplication engine service - [https://github.com/unicef/hope-beneficiary-portal/](https://github.com/unicef/hope-beneficiary-portal/) which handles data deduplication tasks within the HOPE project.
 
