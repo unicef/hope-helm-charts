@@ -72,10 +72,16 @@ postgresql:
   enabled: true
   global:
     postgresql:
-      auth:
-        username: "postgres"
-        password: ""
-        database: "hbp"
+  enabled: true
+  auth:
+    username: "hbp"
+    password: ""
+    database: "hbp"
+    postgresPassword: ""
+  primary:
+    initdb:
+      user: postgres
+      password: ""
   primary:
     persistence:
       enabled: true
