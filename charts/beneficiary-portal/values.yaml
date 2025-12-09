@@ -1,0 +1,119 @@
+# Default values for beneficiary-portal.
+# This is a YAML-formatted file.
+
+backend:
+  replicaCount: 1
+
+celery:
+  replicaCount: 1
+
+global:
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+image:
+  repository: unicef/hope-beneficiary-portal
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+     # kubernetes.io/ingress.class: nginx
+     # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  global:
+    postgresql:
+      auth:
+        username: "postgres"
+        password: ""
+        database: "hbp"
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+# Redis configuration
+redis:
+  enabled: true
+  
+
+# Key Vault configuration
+keyvault:
+  enabled: true
+  envMappings: []
+  mountPath: /mnt/secrets
+  secretName: "keyvault-secret"
+  
+  secrets: 
+    - name: django-secret-key
+      key: django-secret-key
+    - name: database-password
+      key: database-password
+    - name: redis-password
+      key: redis-password
+
+# Django settings
+django:
+  debug: "False"
+  allowedHosts: "*"
+  csrfTrustedOrigins: "https://hbp.yourdomain.com"
+  corsAllowedOrigins: "https://hbp.yourdomain.com"
+  mediaStorage: "django.core.files.storage.FileSystemStorage"
+  staticStorage: "django.contrib.staticfiles.storage.StaticFilesStorage"
+  emailBackend: "django.core.mail.backends.console.EmailBackend"
+  defaultFromEmail: "noreply@hbp.yourdomain.com"
+  serverEmail: "server@hbp.yourdomain.com"

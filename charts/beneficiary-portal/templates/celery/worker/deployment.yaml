@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hope-beneficiary-portal.fullname" . }}-celery-worker
+  labels:
+    {{- include "hope-beneficiary-portal.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.celery.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 6 }}
+      service: "celery-worker"
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/backend/configmap.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.rollme.enabled }}
+        rollme: {{ randAlphaNum 5 | quote }}
+      {{- end }}
+      labels:
+        {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 8 }}
+        service: "celery-worker"
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
+      serviceAccountName: {{ include "hope-beneficiary-portal.serviceAccountName" . }}
+      containers:
+        - name: celery
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args: ["worker"]
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "hope-beneficiary-portal.fullname" . }}-backend
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+            - name: hbp-model-data
+              mountPath: /hbp-model
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+        - name: hbp-model-data
+          persistentVolumeClaim:
+            claimName: {{ include "hope-beneficiary-portal.fullname" . }}-model-data
+            readOnly: true

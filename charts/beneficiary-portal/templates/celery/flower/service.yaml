@@ -1,0 +1,18 @@
+{{- if .Values.flower.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hope-beneficiary-portal.fullname" . }}-celery-flower
+  labels:
+    {{- include "hope-beneficiary-portal.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.flower.service.type }}
+  ports:
+    - port: {{ .Values.flower.service.port }}
+      targetPort: {{ .Values.flower.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 4 }}
+    hope-beneficiary-portal/service: celery-flower
+{{- end }}

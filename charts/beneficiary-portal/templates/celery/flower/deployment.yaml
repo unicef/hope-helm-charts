@@ -1,0 +1,77 @@
+{{- if .Values.flower.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hope-beneficiary-portal.fullname" . }}-celery-flower
+  labels:
+    {{- include "hope-beneficiary-portal.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 6 }}
+      hope-beneficiary-portal/service: celery-flower
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.flower.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 8 }}
+        hope-beneficiary-portal/service: celery-flower
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hope-beneficiary-portal.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.flower.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-celery-flower
+          securityContext:
+            {{- toYaml .Values.flower.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["celery", "flower", "-A", "hope_beneficiary_portal.config.celery", "--address=0.0.0.0", "--broker=$CELERY_BROKER_URL"]
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "hope-beneficiary-portal.fullname" . }}-backend
+          env:
+            - name: FLOWER_URL_PREFIX
+              value: flower
+            {{- if .Values.keyvault.enabled }}
+            - name: FLOWER_BASIC_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keyvault.secretName }}
+                  key: FLOWER_BASIC_AUTH
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keyvault.secretName }}
+                  key: CELERY_BROKER_URL
+            {{- end }}
+          ports:
+            - containerPort: 5555
+              name: http
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.flower.resources | nindent 12 }}
+      {{- with .Values.flower.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flower.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.flower.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+{{- end }}
