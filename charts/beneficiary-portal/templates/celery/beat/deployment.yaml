@@ -1,47 +1,67 @@
+# templates/celery/beat/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "hope-beneficiary-portal.fullname" . }}-celery-beat
+  name: {{ include "beneficiary-portal.fullname" . }}-celery-beat
   labels:
-    {{- include "hope-beneficiary-portal.labels" . | nindent 4 }}
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: celery-beat
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 6 }}
-      service: "celery-beat"
+      {{- include "beneficiary-portal.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: celery-beat
   template:
     metadata:
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/backend/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "beneficiary-portal.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: celery-beat
       {{- with .Values.podAnnotations }}
+      annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.rollme.enabled }}
-        rollme: {{ randAlphaNum 5 | quote }}
-      {{- end }}
-      labels:
-        {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 8 }}
-        service: "celery-beat"
     spec:
+      serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: celery
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+        - name: celery-beat
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
-          args: ["beat"]
-          envFrom:
-          {{ include "keyvault.secretRef" . | nindent 12 }}
-            - configMapRef:
-                name: {{ include "hope-beneficiary-portal.fullname" . }}-backend
-          volumeMounts:
-            {{ include "keyvault.volumeMounts" . | nindent 12 }}
-            - name: hbp-model-data
-              mountPath: /hbp-model
-      volumes:
-        {{ include "keyvault.volumes" . | nindent 8 }}
-        - name: hbp-model-data
-          persistentVolumeClaim:
-            claimName: {{ include "hope-beneficiary-portal.fullname" . }}-model-data
-            readOnly: true
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["celery", "-A", "config", "beat", "--loglevel=info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
+          env:
+            - name: DJANGO_SETTINGS_MODULE
+              value: "config.settings.production"
+            - name: DJANGO_DEBUG
+              value: {{ .Values.django.debug | quote }}
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "beneficiary-portal.fullname" . }}-secrets
+                  key: django-secret-key
+            - name: CELERY_BROKER_URL
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/1"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "beneficiary-portal.redis.fullname" . }}
+                  key: redis-password
+          resources:
+            {{- toYaml .Values.celery.beat.resources | default .Values.celery.worker.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
