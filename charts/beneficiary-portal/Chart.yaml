@@ -14,3 +14,7 @@ dependencies:
     version: 18.19.4
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: redis.enabled
+  - name: keyvault
+    version: 0.1.3
+    repository: file://../keyvault
+    condition: keyvault.enabled
