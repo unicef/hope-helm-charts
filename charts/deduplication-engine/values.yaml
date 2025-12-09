@@ -10,8 +10,15 @@ backend:
     port: 8000
 
 celery:
-  replicaCount: 1
-
+  worker:
+    replicas: 2
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
 global:
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
