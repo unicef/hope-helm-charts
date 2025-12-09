@@ -1,8 +1,7 @@
 # Default values for beneficiary-portal.
 # This is a YAML-formatted file.
 
-backend:
-  replicaCount: 1
+replicaCount: 1
 
 celery:
   replicaCount: 1
