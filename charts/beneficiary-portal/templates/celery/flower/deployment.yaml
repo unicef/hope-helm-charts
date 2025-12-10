@@ -1,77 +1,90 @@
-{{- if .Values.flower.enabled }}
+{{- if and .Values.flower.enabled .Values.celery.worker.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "hope-beneficiary-portal.fullname" . }}-celery-flower
+  name: {{ include "beneficiary-portal.fullname" . }}-flower
   labels:
-    {{- include "hope-beneficiary-portal.labels" . | nindent 4 }}
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: flower
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 6 }}
-      hope-beneficiary-portal/service: celery-flower
+      {{- include "beneficiary-portal.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: flower
   template:
     metadata:
-      annotations:
-        {{- with .Values.flower.podAnnotations }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
       labels:
-        {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 8 }}
-        hope-beneficiary-portal/service: celery-flower
+        {{- include "beneficiary-portal.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: flower
     spec:
-      {{- with .Values.global.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "hope-beneficiary-portal.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.flower.podSecurityContext | nindent 8 }}
+      serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
       containers:
-        - name: {{ .Chart.Name }}-celery-flower
-          securityContext:
-            {{- toYaml .Values.flower.securityContext | nindent 12 }}
+        - name: flower
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          command: ["celery", "flower", "-A", "hope_beneficiary_portal.config.celery", "--address=0.0.0.0", "--broker=$CELERY_BROKER_URL"]
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "hope-beneficiary-portal.fullname" . }}-backend
-          env:
-            - name: FLOWER_URL_PREFIX
-              value: flower
-            {{- if .Values.keyvault.enabled }}
-            - name: FLOWER_BASIC_AUTH
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.keyvault.secretName }}
-                  key: FLOWER_BASIC_AUTH
-            - name: CELERY_BROKER_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.keyvault.secretName }}
-                  key: CELERY_BROKER_URL
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: 
+            - celery
+            - -A
+            - config
+            - flower
+            - --port={{ .Values.flower.port | default 5555 | quote }}
+            {{- if .Values.flower.auth.enabled }}
+            - --basic_auth={{ .Values.flower.auth.username }}:$(FLOWER_PASSWORD)
             {{- end }}
           ports:
-            - containerPort: 5555
+            - containerPort: {{ .Values.flower.port | default 5555 }}
+              protocol: TCP
               name: http
-          volumeMounts:
-            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+          env:
+            - name: CELERY_BROKER_URL
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/1"
+            - name: CELERY_RESULT_BACKEND
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/2"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "beneficiary-portal.redis.fullname" . }}
+                  key: redis-password
+            {{- if .Values.flower.auth.enabled }}
+            - name: FLOWER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "beneficiary-portal.fullname" . }}-flower-auth
+                  key: password
+            {{- end }}
           resources:
             {{- toYaml .Values.flower.resources | nindent 12 }}
-      {{- with .Values.flower.nodeSelector }}
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.flower.affinity }}
+      {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.flower.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      volumes:
-        {{ include "keyvault.volumes" . | nindent 8 }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
 {{- end }}
