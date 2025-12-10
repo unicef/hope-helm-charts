@@ -26,25 +26,20 @@ spec:
         command: ["celery", "-A", "config", "worker", "--loglevel=info"]
         env:
         - name: CELERY_BROKER_URL
-          value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/0"
+          value: "redis://{{ .Release.Name }}-redis-master:6379/0"
         - name: CELERY_RESULT_BACKEND
-          value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/0"
+          value: "redis://{{ .Release.Name }}-redis-master:6379/0"
+        - name: DATABASE_URL
+          value: "postgresql://{{ .Values.postgresql.postgresqlUsername }}:$(POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase }}"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-postgresql
+              key: postgresql-password
         - name: DJANGO_SETTINGS_MODULE
           value: "config.settings.production"
         - name: DJANGO_DEBUG
           value: "{{ .Values.django.debug | default false | quote }}"
-        {{- if .Values.redis.password }}
-        - name: CELERY_BROKER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "beneficiary-portal.fullname" . }}-redis
-              key: redis-password
-        - name: CELERY_RESULT_BACKEND_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "beneficiary-portal.fullname" . }}-redis
-              key: redis-password
-        {{- end }}
         resources:
           {{- toYaml .Values.celery.worker.resources | default "{}" | nindent 10 }}
       {{- with .Values.nodeSelector }}
