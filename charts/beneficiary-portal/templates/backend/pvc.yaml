@@ -1,11 +1,17 @@
+{{- if .Values.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "hope-beneficiary-portal.fullname" . }}-model-data
+  name: {{ include "beneficiary-portal.fullname" . }}-pvc
+  labels:
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
 spec:
   accessModes:
-  - ReadWriteMany
+    - {{ .Values.persistence.accessMode | quote }}
   resources:
     requests:
-      storage: 2Gi
-  storageClassName: azurefile
+      storage: {{ .Values.persistence.size | quote }}
+  {{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}
