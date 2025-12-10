@@ -135,10 +135,9 @@ postgresql:
   global:
     postgresql:
       auth:
-        username: "hbp"
-        password: ""
-        database: "hbp"
-        postgresPassword: ""
+          postgresqlDatabase: "beneficiary_portal"
+          postgresqlUsername: "postgres"
+          postgresqlPassword: ""
 
   primary:
     initdb:
