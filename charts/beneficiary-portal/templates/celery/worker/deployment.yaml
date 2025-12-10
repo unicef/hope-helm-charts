@@ -34,12 +34,12 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgresql
+              name: "{{ .Release.Name }}-postgresql"
               key: postgresql-password
         - name: DJANGO_SETTINGS_MODULE
           value: "config.settings.production"
         - name: DJANGO_DEBUG
-          value: "{{ .Values.django.debug | default false | quote }}"
+          value: "{{ .Values.django.debug | default false }}"
         resources:
           {{- toYaml .Values.celery.worker.resources | default "{}" | nindent 10 }}
       nodeSelector:
