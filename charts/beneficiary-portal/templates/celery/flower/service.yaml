@@ -1,18 +1,19 @@
-{{- if .Values.flower.enabled }}
+{{- if and .Values.flower.enabled .Values.celery.worker.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hope-beneficiary-portal.fullname" . }}-celery-flower
+  name: {{ include "beneficiary-portal.fullname" . }}-flower
   labels:
-    {{- include "hope-beneficiary-portal.labels" . | nindent 4 }}
+    {{- include "benefitory-portal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: flower
 spec:
-  type: {{ .Values.flower.service.type }}
+  type: {{ .Values.flower.service.type | default "ClusterIP" }}
   ports:
     - port: {{ .Values.flower.service.port }}
-      targetPort: {{ .Values.flower.service.port }}
+      targetPort: {{ .Values.flower.port }}
       protocol: TCP
       name: http
   selector:
-    {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 4 }}
-    hope-beneficiary-portal/service: celery-flower
+    {{- include "beneficiary-portal.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: flower
 {{- end }}
