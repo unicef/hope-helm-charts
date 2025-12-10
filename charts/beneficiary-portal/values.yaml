@@ -192,3 +192,9 @@ django:
   emailBackend: "django.core.mail.backends.console.EmailBackend"
   defaultFromEmail: "noreply@hbp.yourdomain.com"
   serverEmail: "server@hbp.yourdomain.com"
+
+persistence:
+  enabled: false
+  size: 8Gi
+  accessMode: ReadWriteOnce
+  # storageClass: "standard"  # Uncomment and set if needed
