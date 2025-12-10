@@ -158,9 +158,11 @@ postgresql:
 # ------------------------------
 redis:
   enabled: true
-  auth:
-    enabled: true
-    password: ""   # will be filled via secret/keyvault
+  fullnameOverride: ""  # Set this if you want to override the Redis service name
+  nameOverride: "redis"
+  host: "{{ .Release.Name }}-redis-master"
+  port: 6379
+  password: ""
 
 # ------------------------------
 # Key Vault configuration
