@@ -5,7 +5,7 @@ replicaCount: 1
 celery:
   worker:
     enabled: true
-    replicas: 2
+    replicas: 1
     resources:
       limits:
         cpu: 500m
