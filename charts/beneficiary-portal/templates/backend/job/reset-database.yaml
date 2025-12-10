@@ -1,0 +1,81 @@
+{{- if .Values.resetDatabase.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "beneficiary-portal.fullname" . }}-reset-db
+  labels:
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/name: {{ include "beneficiary-portal.name" . }}-reset-db
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
+      containers:
+      - name: reset-db
+        image: "{{ .Values.resetDatabase.image.repository }}:{{ .Values.resetDatabase.image.tag }}"
+        imagePullPolicy: {{ .Values.resetDatabase.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args:
+          - >
+            python manage.py reset_db --noinput &&
+            python manage.py migrate &&
+            python manage.py createcachetable
+        env:
+          - name: DJANGO_SETTINGS_MODULE
+            value: "config.settings.production"
+          - name: DJANGO_DEBUG
+            value: "False"
+          - name: DATABASE_URL
+            value: "postgresql://{{ .Values.postgresql.global.postgresql.auth.username }}:$(POSTGRES_PASSWORD)@{{ include "beneficiary-portal.postgresql.fullname" . }}:5432/{{ .Values.postgresql.global.postgresql.auth.database }}"
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "beneficiary-portal.postgresql.fullname" . }}
+                key: postgres-password
+          - name: DJANGO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "beneficiary-portal.fullname" . }}-secrets
+                key: django-secret-key
+          {{- if .Values.resetDatabase.extraEnv }}
+          {{- toYaml .Values.resetDatabase.extraEnv | nindent 10 }}
+          {{- end }}
+        {{- if .Values.keyvault.enabled }}
+        volumeMounts:
+          - name: secrets-store-inline
+            mountPath: "/mnt/secrets-store"
+            readOnly: true
+        {{- end }}
+      {{- if .Values.keyvault.enabled }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "beneficiary-portal.fullname" . }}-keyvault
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+  backoffLimit: 1
+{{- end }}

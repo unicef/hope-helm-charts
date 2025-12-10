@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "beneficiary-portal.fullname" . }}
+  labels:
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "beneficiary-portal.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "beneficiary-portal.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- with .Values.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        reloader.stakater.com/auto: "true"
+    spec:
+      serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.keyvault.enabled }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "beneficiary-portal.fullname" . }}-keyvault
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: DJANGO_SETTINGS_MODULE
+              value: "config.settings.production"
+            - name: DJANGO_DEBUG
+              value: {{ .Values.django.debug | quote }}
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "beneficiary-portal.fullname" . }}-secrets
+                  key: django-secret-key
+            - name: DATABASE_URL
+              value: "postgresql://{{ .Values.postgresql.global.postgresql.auth.username }}:$(POSTGRES_PASSWORD)@{{ include "beneficiary-portal.postgresql.fullname" . }}:5432/{{ .Values.postgresql.global.postgresql.auth.database }}"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "beneficiary-portal.postgresql.fullname" . }}
+                  key: postgres-password
+            - name: REDIS_URL
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/0"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "beneficiary-portal.redis.fullname" . }}
+                  key: redis-password
+            - name: CELERY_BROKER_URL
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/1"
+            - name: CELERY_RESULT_BACKEND
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/2"
+            - name: ALLOWED_HOSTS
+              value: {{ .Values.django.allowedHosts | quote }}
+            - name: CSRF_TRUSTED_ORIGINS
+              value: {{ .Values.django.csrfTrustedOrigins | quote }}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ .Values.django.corsAllowedOrigins | quote }}
+            - name: DEFAULT_FROM_EMAIL
+              value: {{ .Values.django.defaultFromEmail | quote }}
+            - name: SERVER_EMAIL
+              value: {{ .Values.django.serverEmail | quote }}
+          {{- if .Values.keyvault.enabled }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
