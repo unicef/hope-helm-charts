@@ -7,3 +7,7 @@ metadata:
 data:
   DJANGO_SETTINGS_MODULE: "config.settings.production"
   DJANGO_DEBUG: "{{ .Values.django.debug | default false | quote }}"
+  CELERY_BROKER_URL: "redis://{{ .Release.Name }}-redis-master:6379/0"
+  CELERY_RESULT_BACKEND: "redis://{{ .Release.Name }}-redis-master:6379/0"
+  DATABASE_URL: "postgresql://{{ .Values.postgresql.postgresqlUsername }}:$(POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase }}"
+  CACHE_URL: "redis://{{ .Release.Name }}-redis-master:6379/1"
