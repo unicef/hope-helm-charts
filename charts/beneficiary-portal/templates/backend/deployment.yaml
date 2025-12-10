@@ -6,7 +6,7 @@ metadata:
     {{- include "beneficiary-portal.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicaCount | default 1 }}
   selector:
     matchLabels:
       {{- include "beneficiary-portal.selectorLabels" . | nindent 6 }}
@@ -19,29 +19,27 @@ spec:
     spec:
       serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
       containers:
-        - name: backend
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-          ports:
-            - name: http
-              containerPort: 8000
-              protocol: TCP
-          env:
-            - name: DJANGO_SETTINGS_MODULE
-              value: "config.settings.production"
-            - name: DJANGO_DEBUG
-              value: "{{ .Values.django.debug | default false | quote }}"
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          livenessProbe:
-            httpGet:
-              path: /health/
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health/
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
+      - name: backend
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" | quote }}
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: {{ include "beneficiary-portal.fullname" . }}-config
+        resources:
+          {{- toYaml .Values.resources | default "{}" | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health/
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
