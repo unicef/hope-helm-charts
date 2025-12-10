@@ -28,6 +28,33 @@ celery:
         cpu: 50m
         memory: 128Mi
 
+flower:
+  enabled: false  # Set to true if you want to enable Flower
+  port: 5555
+  service:
+    type: ClusterIP
+    port: 80
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts:
+      - host: flower.yourdomain.com
+        paths: 
+          - path: /
+            pathType: Prefix
+    tls: []
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  auth:
+    enabled: false
+    username: admin
+    password: ""  # Will be set from a secret
+
 global:
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
