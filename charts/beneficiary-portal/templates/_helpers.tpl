@@ -75,3 +75,35 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/* PostgreSQL fullname */}}
+{{- define "beneficiary-portal.postgresql.fullname" -}}
+{{- if .Values.postgresql.fullnameOverride -}}
+{{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "postgresql" .Values.postgresql.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* PostgreSQL host */}}
+{{- define "beneficiary-portal.postgresql.host" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- template "beneficiary-portal.postgresql.fullname" . -}}-master
+{{- else -}}
+{{- .Values.postgresql.postgresqlHost | default "" -}}
+{{- end -}}
+{{- end -}}
+
+{{/* PostgreSQL port */}}
+{{- define "beneficiary-portal.postgresql.port" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- .Values.postgresql.service.port | default 5432 -}}
+{{- else -}}
+{{- .Values.postgresql.postgresqlPort | default 5432 -}}
+{{- end -}}
+{{- end -}}
