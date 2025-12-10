@@ -7,7 +7,7 @@ metadata:
     {{- include "beneficiary-portal.labels" . | nindent 4 }}
     app.kubernetes.io/component: celery-worker
 spec:
-  replicas: {{ .Values.celery.worker.replicas | default 2 }}
+  replicas: {{ .Values.celery.worker.replicas | default 1 }}
   selector:
     matchLabels:
       {{- include "beneficiary-portal.selectorLabels" . | nindent 6 }}
@@ -15,53 +15,38 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "beneficiary-portal.selectorLabels" . | nindent 8 }}
+        {{- include "beneficiary-portal.labels" . | nindent 8 }}
         app.kubernetes.io/component: celery-worker
     spec:
       serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
       containers:
-        - name: celery-worker
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["celery", "-A", "config", "worker", "--loglevel=info"]
-          env:
-            - name: DJANGO_SETTINGS_MODULE
-              value: "config.settings.production"
-            - name: DJANGO_DEBUG
-              value: {{ .Values.django.debug | quote }}
-            - name: DJANGO_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "beneficiary-portal.fullname" . }}-secrets
-                  key: django-secret-key
-            - name: CELERY_BROKER_URL
-              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/1"
-            - name: CELERY_RESULT_BACKEND
-              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/2"
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "beneficiary-portal.redis.fullname" . }}
-                  key: redis-password
-          resources:
-            {{- with .Values.celery.worker.resources }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
-          {{- if .Values.keyvault.enabled }}
-          volumeMounts:
-            - name: secrets-store-inline
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
-          {{- end }}
-      {{- if .Values.keyvault.enabled }}
-      volumes:
-        - name: secrets-store-inline
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: {{ include "beneficiary-portal.fullname" . }}-keyvault
-      {{- end }}
+      - name: celery-worker
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" | quote }}
+        command: ["celery", "-A", "config", "worker", "--loglevel=info"]
+        env:
+        - name: CELERY_BROKER_URL
+          value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/0"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/0"
+        - name: DJANGO_SETTINGS_MODULE
+          value: "config.settings.production"
+        - name: DJANGO_DEBUG
+          value: "{{ .Values.django.debug | default false | quote }}"
+        {{- if .Values.redis.password }}
+        - name: CELERY_BROKER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "beneficiary-portal.fullname" . }}-redis
+              key: redis-password
+        - name: CELERY_RESULT_BACKEND_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "beneficiary-portal.fullname" . }}-redis
+              key: redis-password
+        {{- end }}
+        resources:
+          {{- toYaml .Values.celery.worker.resources | default "{}" | nindent 10 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
