@@ -98,6 +98,18 @@ nodeSelector: {}
 
 tolerations: []
 
+releaseJob:
+  enabled: true
+  createSuperuser: false  # Set to true to create a default superuser
+  image:
+    repository: "{{ .Values.image.repository }}"
+    tag: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+    pullPolicy: "{{ .Values.image.pullPolicy }}"
+  # Optional: Add additional environment variables if needed
+  # extraEnv: []
+  #   - name: FOO
+  #     value: "bar"
+
 resetDatabase:
   enabled: false  # Set to true only when you need to reset the database
   image:
