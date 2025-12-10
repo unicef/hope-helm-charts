@@ -1,4 +1,4 @@
-# templates/celery/worker/deployment.yaml
+{{- if .Values.celery.worker.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,7 +7,7 @@ metadata:
     {{- include "beneficiary-portal.labels" . | nindent 4 }}
     app.kubernetes.io/component: celery-worker
 spec:
-  replicas: {{ .Values.celery.worker.replicas | default 1 }}
+  replicas: {{ .Values.celery.worker.replicas | default 2 }}
   selector:
     matchLabels:
       {{- include "beneficiary-portal.selectorLabels" . | nindent 6 }}
@@ -17,14 +17,8 @@ spec:
       labels:
         {{- include "beneficiary-portal.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: celery-worker
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
     spec:
       serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: celery-worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -42,13 +36,32 @@ spec:
                   key: django-secret-key
             - name: CELERY_BROKER_URL
               value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/1"
+            - name: CELERY_RESULT_BACKEND
+              value: "redis://:$(REDIS_PASSWORD)@{{ include "beneficiary-portal.redis.fullname" . }}-master:6379/2"
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "beneficiary-portal.redis.fullname" . }}
                   key: redis-password
           resources:
-            {{- toYaml .Values.celery.worker.resources | nindent 12 }}
+            {{- with .Values.celery.worker.resources }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.keyvault.enabled }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          {{- end }}
+      {{- if .Values.keyvault.enabled }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "beneficiary-portal.fullname" . }}-keyvault
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -65,3 +78,4 @@ spec:
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
+{{- end }}
