@@ -74,6 +74,9 @@ serviceAccount:
 
 podAnnotations: {}
 
+modelDownloader:
+  enabled: false
+
 podSecurityContext: {}
 
 securityContext: {}
