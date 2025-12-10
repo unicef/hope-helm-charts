@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hope-beneficiary-portal.fullname" . }}
+  name: {{ include "beneficiary-portal.fullname" . }}
   labels:
-    {{- include "hope-beneficiary-portal.labels" . | nindent 4 }}
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "hope-beneficiary-portal.selectorLabels" . | nindent 4 }}
+    {{- include "beneficiary-portal.selectorLabels" . | nindent 4 }}
