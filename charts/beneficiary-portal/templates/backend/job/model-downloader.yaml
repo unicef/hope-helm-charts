@@ -1,42 +1,54 @@
+{{- if .Values.modelDownloader.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "deduplication-engine.fullname" . }}-model-downloader
+  name: {{ include "beneficiary-portal.fullname" . }}-model-downloader
   labels:
-    {{- include "deduplication-engine.labels" . | nindent 4 }}
-    deduplication-engine/job: model-downloader
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: model-downloader
   annotations:
-    "helm.sh/hook": pre-upgrade, post-install
-    "helm.sh/hook-weight": "5"
-    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   template:
-    metadata:
-      labels:
-        {{- include "deduplication-engine.labels" . | nindent 8 }}
-        deduplication-engine/job: model-downloader
     spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
       containers:
-        - name: {{ .Chart.Name }}-backend-model-downloader
-          args: ["syncmodels"]
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
-          envFrom:
-          {{ include "keyvault.secretRef" . | nindent 12 }}
-            - configMapRef:
-                name: {{ include "deduplication-engine.fullname" . }}-backend
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            {{ include "keyvault.volumeMounts" . | nindent 12 }}
-            - name: dde-model-data
-              mountPath: /dde-model
-      restartPolicy: Never
-      volumes:
-        {{ include "keyvault.volumes" . | nindent 8 }}
-        - name: dde-model-data
-          persistentVolumeClaim:
-            claimName: {{ include "deduplication-engine.fullname" . }}-model-data
-  backoffLimit: 3
+      - name: model-downloader
+        image: "{{ .Values.modelDownloader.image.repository }}:{{ .Values.modelDownloader.image.tag }}"
+        imagePullPolicy: {{ .Values.modelDownloader.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            # Add your model download commands here
+            echo "Model download complete"
+        env:
+          - name: DJANGO_SETTINGS_MODULE
+            value: "config.settings.production"
+          - name: DJANGO_DEBUG
+            value: "False"
+          {{- if .Values.modelDownloader.extraEnv }}
+          {{- toYaml .Values.modelDownloader.extraEnv | nindent 10 }}
+          {{- end }}
+        resources:
+          {{- toYaml .Values.modelDownloader.resources | default dict | nindent 10 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+  backoffLimit: 1
+{{- end }}
