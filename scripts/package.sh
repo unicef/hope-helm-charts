@@ -20,6 +20,8 @@ create_output_dir() {
 package_chart() {
   local chart=$1
   if [ -d "$CHART_DIR/$chart" ]; then
+    echo "Updating dependencies for chart: $chart"
+    helm dependency update "$CHART_DIR/$chart"
     helm package "$CHART_DIR/$chart" -d $OUTPUT_DIR
   else
     echo "Error: Directory $CHART_DIR/$chart does not exist." >&2
