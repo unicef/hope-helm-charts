@@ -46,3 +46,8 @@ rollme:
 
 serviceAccount:
   create: false
+
+redis:
+  enabled: true
+  auth:
+    enabled: false

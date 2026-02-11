@@ -84,6 +84,8 @@ volumeMounts: []
 
 redis:
   enabled: true
+  auth:
+    enabled: false
 
 flower:
   enabled: false

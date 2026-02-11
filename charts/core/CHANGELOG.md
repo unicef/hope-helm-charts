@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.0 (2025-02-11)
+* Upgrade Redis dependency to 24.1.8 (OCI)
+
 ## 0.11.0 (2025-11-11)
 * removed hct_mis_api references
 

@@ -73,3 +73,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+redis:
+  enabled: true
+  auth:
+    enabled: false
