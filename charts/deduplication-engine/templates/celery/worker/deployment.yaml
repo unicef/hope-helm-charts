@@ -44,9 +44,18 @@ spec:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
             - name: dde-model-data
               mountPath: /dde-model
+            {{- if .Values.dataPvc.enabled }}
+            - name: dde-data
+              mountPath: /var/data
+            {{- end }}
       volumes:
         {{ include "keyvault.volumes" . | nindent 8 }}
         - name: dde-model-data
           persistentVolumeClaim:
             claimName: {{ include "deduplication-engine.fullname" . }}-model-data
             readOnly: true
+        {{- if .Values.dataPvc.enabled }}
+        - name: dde-data
+          persistentVolumeClaim:
+            claimName: {{ include "deduplication-engine.fullname" . }}-data
+        {{- end }}

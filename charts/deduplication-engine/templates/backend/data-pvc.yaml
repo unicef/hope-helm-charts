@@ -1,0 +1,15 @@
+{{- if .Values.dataPvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "deduplication-engine.fullname" . }}-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.dataPvc.size }}
+  {{- if .Values.dataPvc.storageClassName }}
+  storageClassName: {{ .Values.dataPvc.storageClassName }}
+  {{- end }}
+{{- end }}
