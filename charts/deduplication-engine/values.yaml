@@ -63,6 +63,12 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# Optional PVC for persistent data mounted at /var/data (backend + celery worker + beat).
+dataPvc:
+  enabled: false
+  size: 10Gi
+  storageClassName: azurefile
+
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
