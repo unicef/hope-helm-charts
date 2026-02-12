@@ -1,9 +1,9 @@
 dependencies:
 - name: redis
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 18.19.4
+  version: 24.1.8
 - name: keyvault
   repository: file://../keyvault
   version: 0.1.3
-digest: sha256:73489af2bee08eb94c9355c0ac4613875c164d83e0e6a5405523cc382c4db007
-generated: "2025-06-13T14:06:27.255538+02:00"
+digest: sha256:c2138d4a0ed0dcf0726762226451334990cb4a79cf5360713aa9aaa165238586
+generated: "2026-02-11T17:57:45.236406+01:00"
