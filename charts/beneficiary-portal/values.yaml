@@ -1,0 +1,201 @@
+# Default values for beneficiary-portal.
+
+replicaCount: 1
+
+celery:
+  worker:
+    enabled: true
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 80
+  beat:
+    enabled: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+flower:
+  enabled: false  # Set to true if you want to enable Flower
+  port: 5555
+  service:
+    type: ClusterIP
+    port: 80
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts:
+      - host: flower.yourdomain.com
+        paths: 
+          - path: /
+            pathType: Prefix
+    tls: []
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  auth:
+    enabled: false
+    username: admin
+    password: ""  # Will be set from a secret
+
+global:
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+image:
+  repository: unicef/hope-beneficiary-portal
+  tag: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+modelDownloader:
+  enabled: false
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: chart-example.local
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+releaseJob:
+  enabled: true
+  createSuperuser: false  # Set to true to create a default superuser
+  image:
+    repository: "{{ .Values.image.repository }}"
+    tag: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+    pullPolicy: "{{ .Values.image.pullPolicy }}"
+  # Optional: Add additional environment variables if needed
+  # extraEnv: []
+  #   - name: FOO
+  #     value: "bar"
+
+resetDatabase:
+  enabled: false  # Set to true only when you need to reset the database
+  image:
+    repository: "{{ .Values.image.repository }}"
+    tag: "{{ .Values.image.tag | default .Chart.AppVersion }}"
+    pullPolicy: "{{ .Values.image.pullPolicy }}"
+  # Optional: Add additional environment variables if needed
+  # extraEnv: []
+  #   - name: FOO
+  #     value: "bar"
+  
+affinity: {}
+
+# ------------------------------
+# PostgreSQL configuration
+# ------------------------------
+postgresql:
+  enabled: true
+
+  global:
+    postgresql:
+      auth:
+          postgresqlDatabase: "beneficiary_portal"
+          postgresqlUsername: "postgres"
+          postgresqlPassword: ""
+
+  primary:
+    initdb:
+      user: postgres
+      password: ""
+    persistence:
+      enabled: true
+      size: 10Gi
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+# ------------------------------
+# Redis configuration
+# ------------------------------
+redis:
+  enabled: true
+  fullnameOverride: ""  # Set this if you want to override the Redis service name
+  nameOverride: "redis"
+  host: "{{ .Release.Name }}-redis-master"
+  port: 6379
+  password: ""
+
+# ------------------------------
+# Key Vault configuration
+# ------------------------------
+keyvault:
+  enabled: true
+  envMappings: []
+  mountPath: /mnt/secrets
+  secretName: "keyvault-secret"
+
+  secrets:
+    - name: django-secret-key
+      key: django-secret-key
+    - name: database-password
+      key: database-password
+    - name: redis-password
+      key: redis-password
+
+# ------------------------------
+# Django settings
+# ------------------------------
+django:
+  debug: "False"
+  allowedHosts: "*"
+  csrfTrustedOrigins: "https://hbp.yourdomain.com"
+  corsAllowedOrigins: "https://hbp.yourdomain.com"
+  mediaStorage: "django.core.files.storage.FileSystemStorage"
+  staticStorage: "django.contrib.staticfiles.storage.StaticFilesStorage"
+  emailBackend: "django.core.mail.backends.console.EmailBackend"
+  defaultFromEmail: "noreply@hbp.yourdomain.com"
+  serverEmail: "server@hbp.yourdomain.com"
+
+persistence:
+  enabled: false
+  size: 8Gi
+  accessMode: ReadWriteOnce
+  # storageClass: "standard"  # Uncomment and set if needed

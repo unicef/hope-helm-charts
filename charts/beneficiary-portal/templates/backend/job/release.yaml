@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "beneficiary-portal.fullname" . }}-release
+  labels:
+    {{- include "beneficiary-portal.labels" . | nindent 4 }}
+    app.kubernetes.io/component: release-job
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "beneficiary-portal.serviceAccountName" . }}
+      containers:
+      - name: release
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" | quote }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          python manage.py migrate
+          python manage.py collectstatic --noinput
+        envFrom:
+        - configMapRef:
+            name: {{ include "beneficiary-portal.fullname" . }}-config
+        resources:
+          {{- toYaml .Values.resources | default "{}" | nindent 10 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: 1
