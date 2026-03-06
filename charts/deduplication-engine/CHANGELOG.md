@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.0 (2026-03-06)
+* Add optional `flower.celeryBrokerUrl` to override CELERY_BROKER_URL from values (e.g. when Redis has no auth and Key Vault has password in URL)
+
 ## 0.13.0 (2026-02-12)
 * Update bitnami dependencies
 
