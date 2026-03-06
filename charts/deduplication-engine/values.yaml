@@ -89,6 +89,7 @@ redis:
 
 flower:
   enabled: false
+  celeryBrokerUrl: ""
 
   service:
     type: ClusterIP
