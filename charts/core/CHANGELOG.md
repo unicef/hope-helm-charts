@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.3 (2025-03-10)
+* Bind images to bitnamilegacy
+
 ## 0.12.2 (2025-03-10)
 * Set global.security.allowInsecureImages for Bitnami subcharts to accept bitnamilegacy images
 

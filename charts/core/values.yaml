@@ -179,6 +179,7 @@ postgresql:
   image:
     registry: docker.io
     repository: bitnamilegacy/postgresql
+    tag: 16.6.0-debian-12-r2
   auth:
     username: hopeuser
     password: change-me-please
@@ -230,6 +231,7 @@ redis:
   image:
     registry: docker.io
     repository: bitnamilegacy/redis
+    tag: 7.2.5-debian-12-r4
   architecture: standalone
 
   auth:
@@ -245,9 +247,11 @@ elasticsearch:
   image:
     registry: docker.io
     repository: bitnamilegacy/elasticsearch
+    tag: 8.17.3-debian-12-r0
   sysctlImage:
     registry: docker.io
     repository: bitnamilegacy/os-shell
+    tag: 12-debian-12-r51
   plugins: "analysis-phonetic,analysis-icu"
   master:
     replicaCount: 1
