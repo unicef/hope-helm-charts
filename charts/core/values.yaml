@@ -13,6 +13,8 @@ serviceAccount:
 global:
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
+  security:
+    allowInsecureImages: true
 
 nginx:
   enabled: true

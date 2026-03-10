@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.2 (2025-03-10)
+* Set global.security.allowInsecureImages for Bitnami subcharts to accept bitnamilegacy images
+
 ## 0.12.1 (2025-03-10)
 * Switch Bitnami subchart images to bitnamilegacy registry (postgresql, redis, elasticsearch, os-shell)
 
