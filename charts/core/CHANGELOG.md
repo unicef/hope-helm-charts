@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.1 (2025-03-10)
+* Switch Bitnami subchart images to bitnamilegacy registry (postgresql, redis, elasticsearch, os-shell)
+
 ## 0.12.0 (2025-02-11)
 * Upgrade Redis dependency to 24.1.8 (OCI)
 
