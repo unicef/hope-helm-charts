@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.4 (2025-03-12)
+* Support Redis vars from `backend.config` when using shared Redis with KeyVault
+* Init container (checkingContainer) uses `envFrom` ConfigMap when `CELERY_BROKER_URL` is in `backend.config`
+* Flower uses ConfigMap for `CELERY_BROKER_URL` when set in `backend.config`, falling back to KeyVault for prod
+
 ## 0.12.3 (2025-03-10)
 * Bind images to bitnamilegacy
 

@@ -100,6 +100,11 @@ Create the name of the service account to use
   command: ["sh", "/scripts/check.sh"]
   volumeMounts:
   {{- include "core.scriptVolumeMount" . | nindent 4 }}
+  {{- if index .Values.backend.config "CELERY_BROKER_URL" }}
+  envFrom:
+    - configMapRef:
+        name: {{ include "core.fullname" . }}-backend
+  {{- end }}
   env:
     {{- if .Values.postgresql.enabled }}
     - name: DATABASE_URL
@@ -139,7 +144,8 @@ Create the name of the service account to use
         secretKeyRef:
           name: {{ include "core.fullname" . }}-backend
           key: CONSTANCE_REDIS_CONNECTION
-    {{- else if not .Values.keyvault.enabled -}}
+    {{- else if or (not .Values.keyvault.enabled) (index .Values.backend.config "CELERY_BROKER_URL") }}
+    {{- if not (index .Values.backend.config "CELERY_BROKER_URL") }}
     - name: CELERY_BROKER_URL
       value: {{ .Values.backend.celeryBrokerUrl | quote }}
     - name: CELERY_RESULT_BACKEND
@@ -148,6 +154,7 @@ Create the name of the service account to use
       value: {{ .Values.backend.cacheLocation | quote }}
     - name: CONSTANCE_REDIS_CONNECTION
       value: {{ .Values.backend.constanceRedisConnection | quote }}
+    {{- end }}
     {{- else }}
     - name: CELERY_BROKER_URL
       valueFrom:
