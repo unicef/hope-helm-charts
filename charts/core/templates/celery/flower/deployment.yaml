@@ -42,11 +42,16 @@ spec:
             - name: FLOWER_URL_PREFIX
               value: flower
             {{- if .Values.keyvault.enabled }}
+            {{- if index .Values.flower.secret "FLOWER_BASIC_AUTH" }}
+            - name: FLOWER_BASIC_AUTH
+              value: {{ index .Values.flower.secret "FLOWER_BASIC_AUTH" | quote }}
+            {{- else }}
             - name: FLOWER_BASIC_AUTH
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.keyvault.secretName }}
                   key: FLOWER_BASIC_AUTH
+            {{- end }}
             {{- if not (index .Values.backend.config "CELERY_BROKER_URL") }}
             - name: CELERY_BROKER_URL
               valueFrom:

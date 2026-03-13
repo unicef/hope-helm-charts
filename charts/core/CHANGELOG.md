@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.5 (2026-03-12)
+* Flower: use `flower.secret.FLOWER_BASIC_AUTH` when set instead of KeyVault (fixes eph envs without KeyVault secret)
+
 ## 0.12.4 (2025-03-12)
 * Support Redis vars from `backend.config` when using shared Redis with KeyVault
 * Init container (checkingContainer) uses `envFrom` ConfigMap when `CELERY_BROKER_URL` is in `backend.config`
