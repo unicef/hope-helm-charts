@@ -36,11 +36,9 @@ spec:
           args: ["flower"]
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
                 name: {{ include "workspace.fullname" . }}-backend
-          # TODO: as long as DATABASE_URL is required in the app to run flower,
-          # the line below will be necessary
-          {{ include "keyvault.secretRef" . | nindent 12 }}
           env:
             - name: FLOWER_URL_PREFIX
               value: flower

@@ -50,7 +50,7 @@ spec:
             {{- if .Values.flower.celeryBrokerUrl }}
             - name: CELERY_BROKER_URL
               value: {{ .Values.flower.celeryBrokerUrl | quote }}
-            {{- else }}
+            {{- else if not (index .Values.backend.config "CELERY_BROKER_URL") }}
             - name: CELERY_BROKER_URL
               valueFrom:
                 secretKeyRef:
