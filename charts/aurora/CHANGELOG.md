@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.3 (2026-03-12)
+* Redis: default image to official `redis:8`
+
 ## 0.1.2 (2026-02-10)
 * Redis: pin to standalone (master only)
 

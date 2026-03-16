@@ -122,6 +122,10 @@ flower:
     port: 5555
 
 redis:
+  image:
+    registry: docker.io
+    repository: redis
+    tag: "8"
   auth:
     enabled: false
 

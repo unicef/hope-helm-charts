@@ -76,5 +76,9 @@ affinity: {}
 
 redis:
   enabled: true
+  image:
+    registry: docker.io
+    repository: redis
+    tag: "8"
   auth:
     enabled: false

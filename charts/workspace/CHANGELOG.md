@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.2 (2026-03-12)
+* Redis: default image to official `redis:8`
+
 ## 0.5.1 (2026-03-12)
 * Flower: fix envFrom order so backend.config overrides KeyVault (shared Redis envs)
 

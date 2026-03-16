@@ -230,8 +230,8 @@ redis:
   enabled: true
   image:
     registry: docker.io
-    repository: bitnamilegacy/redis
-    tag: 7.2.5-debian-12-r4
+    repository: redis
+    tag: "8"
   architecture: standalone
 
   auth:

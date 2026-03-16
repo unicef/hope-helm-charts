@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.6 (2026-03-12)
+* Redis: default image to official `redis:8`
+
 ## 0.12.5 (2026-03-12)
 * Flower: use `flower.secret.FLOWER_BASIC_AUTH` when set instead of KeyVault (fixes eph envs without KeyVault secret)
 
