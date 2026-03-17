@@ -149,6 +149,18 @@ redis:
 
   replica:
     replicaCount: 1
+    command: ["redis-server"]
+    args: ["/config/redis.conf"]
+    extraVolumeMounts:
+      - name: redis-conf
+        mountPath: /config
+        readOnly: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      allowPrivilegeEscalation: false
+    podSecurityContext:
+      fsGroup: 999
 
 postgresql:
   enabled: true
