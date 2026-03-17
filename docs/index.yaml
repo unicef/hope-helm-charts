@@ -3,7 +3,7 @@ entries:
   aurora:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-03-17T13:53:45.318488+01:00"
+    created: "2026-03-17T14:13:44.910747+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -18,7 +18,7 @@ entries:
       repository: oci://registry-1.docker.io/bitnamicharts
       version: 14.x.x
     description: A Helm chart for Kubernetes
-    digest: 114363c5fb2adf4c6ae8d4a3a21bfd296118ae9aa5445b7a1b34303786fd8cc3
+    digest: c85753eb43776c86c8189ff3bf35ba847db83c7ad4372623203c04d738e5ebd0
     name: aurora
     type: application
     urls:
@@ -26,7 +26,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-03-17T13:53:45.308049+01:00"
+    created: "2026-03-17T14:13:44.900345+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -49,7 +49,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-03-17T13:53:45.297978+01:00"
+    created: "2026-03-17T14:13:44.889631+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -72,7 +72,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-03-17T13:53:45.287633+01:00"
+    created: "2026-03-17T14:13:44.879478+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -96,7 +96,7 @@ entries:
   core:
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.510295+01:00"
+    created: "2026-03-17T14:13:45.107088+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -119,7 +119,7 @@ entries:
       repository: file://../keyvault
       version: 0.1.3
     description: A Helm chart for Kubernetes
-    digest: 2f3eda553186628f454ef0857235de09654c4186d9f70e2b43c1c2db1f9d92f8
+    digest: b0ce3011f536365008f8630373093038fd1917c2520140c06a4335093e17108f
     name: core
     type: application
     urls:
@@ -127,7 +127,7 @@ entries:
     version: 0.12.6
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.49249+01:00"
+    created: "2026-03-17T14:13:45.08925+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -158,7 +158,7 @@ entries:
     version: 0.12.5
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.474679+01:00"
+    created: "2026-03-17T14:13:45.071245+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -189,7 +189,7 @@ entries:
     version: 0.12.4
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.456473+01:00"
+    created: "2026-03-17T14:13:45.053211+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -220,7 +220,7 @@ entries:
     version: 0.12.3
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.438227+01:00"
+    created: "2026-03-17T14:13:45.034958+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -251,7 +251,7 @@ entries:
     version: 0.12.2
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.419858+01:00"
+    created: "2026-03-17T14:13:45.016971+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -282,7 +282,7 @@ entries:
     version: 0.12.1
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.40176+01:00"
+    created: "2026-03-17T14:13:44.997928+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -313,7 +313,7 @@ entries:
     version: 0.12.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.384325+01:00"
+    created: "2026-03-17T14:13:44.979505+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -344,7 +344,7 @@ entries:
     version: 0.11.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.367623+01:00"
+    created: "2026-03-17T14:13:44.95977+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -375,7 +375,7 @@ entries:
     version: 0.10.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.688977+01:00"
+    created: "2026-03-17T14:13:45.287596+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -406,7 +406,7 @@ entries:
     version: 0.9.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.672348+01:00"
+    created: "2026-03-17T14:13:45.271184+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -437,7 +437,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.655381+01:00"
+    created: "2026-03-17T14:13:45.253927+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -468,7 +468,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.638655+01:00"
+    created: "2026-03-17T14:13:45.237209+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -495,7 +495,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.622658+01:00"
+    created: "2026-03-17T14:13:45.220977+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -522,7 +522,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.606087+01:00"
+    created: "2026-03-17T14:13:45.204898+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -549,7 +549,7 @@ entries:
     version: 0.4.3
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.590528+01:00"
+    created: "2026-03-17T14:13:45.189188+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -576,7 +576,7 @@ entries:
     version: 0.4.2
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.574693+01:00"
+    created: "2026-03-17T14:13:45.172154+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -603,7 +603,7 @@ entries:
     version: 0.4.1
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.558445+01:00"
+    created: "2026-03-17T14:13:45.155992+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -630,7 +630,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.542646+01:00"
+    created: "2026-03-17T14:13:45.139379+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -657,7 +657,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.52628+01:00"
+    created: "2026-03-17T14:13:45.123695+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -684,7 +684,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.35006+01:00"
+    created: "2026-03-17T14:13:44.942392+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -707,7 +707,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: core-2.10.1
-    created: "2026-03-17T13:53:45.33403+01:00"
+    created: "2026-03-17T14:13:44.926568+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -731,7 +731,7 @@ entries:
   deduplication-engine:
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.767402+01:00"
+    created: "2026-03-17T14:13:45.367668+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -746,7 +746,7 @@ entries:
       repository: oci://registry-1.docker.io/bitnamicharts
       version: 14.x.x
     description: A Helm chart for Kubernetes
-    digest: 4627be9312f3d8138cdb6c7c09101f27f6ef1876f24a0ced804c9192ab734801
+    digest: 677163c598f8e885157cee4034995b440d2480965b2165b3a58ce1a62c1941fe
     name: deduplication-engine
     type: application
     urls:
@@ -754,7 +754,7 @@ entries:
     version: 0.14.2
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.757229+01:00"
+    created: "2026-03-17T14:13:45.357275+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -777,7 +777,7 @@ entries:
     version: 0.14.1
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.747293+01:00"
+    created: "2026-03-17T14:13:45.347005+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -800,7 +800,7 @@ entries:
     version: 0.14.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.737507+01:00"
+    created: "2026-03-17T14:13:45.336255+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -823,7 +823,7 @@ entries:
     version: 0.13.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.727418+01:00"
+    created: "2026-03-17T14:13:45.32579+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -846,7 +846,7 @@ entries:
     version: 0.12.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.717335+01:00"
+    created: "2026-03-17T14:13:45.315363+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -869,7 +869,7 @@ entries:
     version: 0.11.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.708416+01:00"
+    created: "2026-03-17T14:13:45.306711+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -892,7 +892,7 @@ entries:
     version: 0.10.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.836068+01:00"
+    created: "2026-03-17T14:13:45.436564+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -915,7 +915,7 @@ entries:
     version: 0.9.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.827049+01:00"
+    created: "2026-03-17T14:13:45.427634+01:00"
     dependencies:
     - condition: valkey.enabled
       name: valkey
@@ -938,7 +938,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.817614+01:00"
+    created: "2026-03-17T14:13:45.418384+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -961,7 +961,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.808898+01:00"
+    created: "2026-03-17T14:13:45.409694+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -984,7 +984,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.799508+01:00"
+    created: "2026-03-17T14:13:45.401193+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1007,7 +1007,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.791219+01:00"
+    created: "2026-03-17T14:13:45.392405+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1026,7 +1026,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.786554+01:00"
+    created: "2026-03-17T14:13:45.387443+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1045,7 +1045,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.781693+01:00"
+    created: "2026-03-17T14:13:45.382806+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1064,7 +1064,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.777228+01:00"
+    created: "2026-03-17T14:13:45.377759+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1083,7 +1083,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.772277+01:00"
+    created: "2026-03-17T14:13:45.373199+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1102,7 +1102,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.699225+01:00"
+    created: "2026-03-17T14:13:45.297176+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1121,7 +1121,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: develop
-    created: "2026-03-17T13:53:45.693818+01:00"
+    created: "2026-03-17T14:13:45.292338+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1140,16 +1140,16 @@ entries:
     version: 0.1.0
   keyvault:
   - apiVersion: v2
-    created: "2026-03-17T13:53:45.838577+01:00"
+    created: "2026-03-17T14:13:45.439084+01:00"
     description: A Helm chart for Kubernetes
-    digest: c6a3be32f12c63008fbe46e20cc3ed7c36fbc4e3db1e35f23aed4ab44bb83ba7
+    digest: c43bfa956ea11e1e842cb9317cf8dc2511811c9023e73f41ec4cd430b91f1639
     name: keyvault
     type: library
     urls:
     - https://unicef.github.io/hope-helm-charts/keyvault-0.1.3.tgz
     version: 0.1.3
   - apiVersion: v2
-    created: "2026-03-17T13:53:45.838322+01:00"
+    created: "2026-03-17T14:13:45.438824+01:00"
     description: A Helm chart for Kubernetes
     digest: ac368fbbbb8ff6c4cfa61c5edca3ae8e03874a94018d5b107c6a984641328f72
     name: keyvault
@@ -1158,7 +1158,7 @@ entries:
     - https://unicef.github.io/hope-helm-charts/keyvault-0.1.2.tgz
     version: 0.1.2
   - apiVersion: v2
-    created: "2026-03-17T13:53:45.836901+01:00"
+    created: "2026-03-17T14:13:45.437386+01:00"
     description: A Helm chart for Kubernetes
     digest: 62aa9e7054bfc9e4e87c7c4fab9078ca35fee29a7a049b34462031f991722015
     name: keyvault
@@ -1167,7 +1167,7 @@ entries:
     - https://unicef.github.io/hope-helm-charts/keyvault-0.1.1.tgz
     version: 0.1.1
   - apiVersion: v2
-    created: "2026-03-17T13:53:45.836578+01:00"
+    created: "2026-03-17T14:13:45.437048+01:00"
     description: A Helm chart for Kubernetes
     digest: 743022c665a687073859751167ee48574995ca24ba486f4ff4a9c1abb06788d2
     name: keyvault
@@ -1178,7 +1178,30 @@ entries:
   payment-gateway:
   - apiVersion: v2
     appVersion: payment-gateway-1.12
-    created: "2026-03-17T13:53:45.958768+01:00"
+    created: "2026-03-17T14:13:45.570741+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    description: A Helm chart for Kubernetes
+    digest: 4e7f5ff56ca1d59e3718aae9d6a81bb3903ce6d640cef147c75888eda0c1ce06
+    name: payment-gateway
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/payment-gateway-0.9.3.tgz
+    version: 0.9.3
+  - apiVersion: v2
+    appVersion: payment-gateway-1.12
+    created: "2026-03-17T14:13:45.560901+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1201,7 +1224,7 @@ entries:
     version: 0.9.2
   - apiVersion: v2
     appVersion: payment-gateway-1.12
-    created: "2026-03-17T13:53:45.948883+01:00"
+    created: "2026-03-17T14:13:45.551095+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1224,7 +1247,7 @@ entries:
     version: 0.9.1
   - apiVersion: v2
     appVersion: payment-gateway-1.12
-    created: "2026-03-17T13:53:45.938866+01:00"
+    created: "2026-03-17T14:13:45.54084+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1247,7 +1270,7 @@ entries:
     version: 0.9.0
   - apiVersion: v2
     appVersion: payment-gateway-1.12
-    created: "2026-03-17T13:53:45.92866+01:00"
+    created: "2026-03-17T14:13:45.530979+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1270,7 +1293,7 @@ entries:
     version: 0.8.0
   - apiVersion: v2
     appVersion: payment-gateway-1.12
-    created: "2026-03-17T13:53:45.920267+01:00"
+    created: "2026-03-17T14:13:45.522224+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1293,7 +1316,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.911769+01:00"
+    created: "2026-03-17T14:13:45.513085+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1316,7 +1339,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.903263+01:00"
+    created: "2026-03-17T14:13:45.504094+01:00"
     dependencies:
     - condition: valkey.enabled
       name: valkey
@@ -1339,7 +1362,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.894687+01:00"
+    created: "2026-03-17T14:13:45.495242+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1362,7 +1385,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.886512+01:00"
+    created: "2026-03-17T14:13:45.487368+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1385,7 +1408,7 @@ entries:
     version: 0.3.3
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.878452+01:00"
+    created: "2026-03-17T14:13:45.479224+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1408,7 +1431,7 @@ entries:
     version: 0.3.2
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.870202+01:00"
+    created: "2026-03-17T14:13:45.470982+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1431,7 +1454,7 @@ entries:
     version: 0.3.1
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.862306+01:00"
+    created: "2026-03-17T14:13:45.462811+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1454,7 +1477,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.854213+01:00"
+    created: "2026-03-17T14:13:45.45485+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1477,7 +1500,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: payment-gateway-2705cf6486bbbfc2e96aa9628d34308ae0bd363d
-    created: "2026-03-17T13:53:45.846404+01:00"
+    created: "2026-03-17T14:13:45.446936+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1501,7 +1524,7 @@ entries:
   reporting:
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.022014+01:00"
+    created: "2026-03-17T14:13:45.635409+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1516,7 +1539,7 @@ entries:
       repository: file://../keyvault
       version: 0.1.3
     description: A Helm chart for Kubernetes
-    digest: 5d832f570004275694a3994a4dfc1f7796a82ae543f319a5976944de28f6a538
+    digest: 415dc41f19e8fa09a010b0f3c125ca98d26888afa41dc40d7b9baa62dd79b0de
     name: reporting
     type: application
     urls:
@@ -1524,7 +1547,7 @@ entries:
     version: 0.14.2
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.012412+01:00"
+    created: "2026-03-17T14:13:45.62549+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1547,7 +1570,7 @@ entries:
     version: 0.14.1
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.002504+01:00"
+    created: "2026-03-17T14:13:45.61547+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1570,7 +1593,7 @@ entries:
     version: 0.14.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:45.992389+01:00"
+    created: "2026-03-17T14:13:45.605338+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1593,7 +1616,7 @@ entries:
     version: 0.13.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:45.98415+01:00"
+    created: "2026-03-17T14:13:45.597302+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1616,7 +1639,7 @@ entries:
     version: 0.12.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:45.975443+01:00"
+    created: "2026-03-17T14:13:45.588486+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1639,7 +1662,7 @@ entries:
     version: 0.11.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:45.966898+01:00"
+    created: "2026-03-17T14:13:45.579613+01:00"
     dependencies:
     - condition: valkey.enabled
       name: valkey
@@ -1662,7 +1685,7 @@ entries:
     version: 0.10.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.115923+01:00"
+    created: "2026-03-17T14:13:45.729171+01:00"
     dependencies:
     - condition: valkey.enabled
       name: valkey
@@ -1685,7 +1708,7 @@ entries:
     version: 0.9.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.107228+01:00"
+    created: "2026-03-17T14:13:45.720729+01:00"
     dependencies:
     - condition: valkey.enabled
       name: valkey
@@ -1708,7 +1731,7 @@ entries:
     version: 0.8.1
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.098585+01:00"
+    created: "2026-03-17T14:13:45.712626+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1731,7 +1754,7 @@ entries:
     version: 0.7.1
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.090166+01:00"
+    created: "2026-03-17T14:13:45.704494+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1754,7 +1777,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.081928+01:00"
+    created: "2026-03-17T14:13:45.696621+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1777,7 +1800,7 @@ entries:
     version: 0.6.3
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.073538+01:00"
+    created: "2026-03-17T14:13:45.68775+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1800,7 +1823,7 @@ entries:
     version: 0.6.2
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.065428+01:00"
+    created: "2026-03-17T14:13:45.679998+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1823,7 +1846,7 @@ entries:
     version: 0.6.1
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.057224+01:00"
+    created: "2026-03-17T14:13:45.67122+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1846,7 +1869,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.049309+01:00"
+    created: "2026-03-17T14:13:45.663058+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1865,7 +1888,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.04144+01:00"
+    created: "2026-03-17T14:13:45.655457+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1884,7 +1907,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.033381+01:00"
+    created: "2026-03-17T14:13:45.646889+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1903,7 +1926,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.025212+01:00"
+    created: "2026-03-17T14:13:45.638384+01:00"
     description: A Helm chart for Kubernetes
     digest: d54780fcefdf07477ae98d05bf64f8b81b4b2ea8d5bdbb605ccac3cc4659f957
     name: reporting
@@ -1913,7 +1936,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.02456+01:00"
+    created: "2026-03-17T14:13:45.637777+01:00"
     description: A Helm chart for Kubernetes
     digest: 299a7ffaf49071c36d14f5a5017068b08c7df0f8d3fe006df79aa0633f283bbd
     name: reporting
@@ -1923,7 +1946,7 @@ entries:
     version: 0.3.6
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.024163+01:00"
+    created: "2026-03-17T14:13:45.637385+01:00"
     description: A Helm chart for Kubernetes
     digest: 77127f0ada1776aa929db12510659ab43bfcbd6b7e14d083a8a18a73b9674b81
     name: reporting
@@ -1933,7 +1956,7 @@ entries:
     version: 0.3.5
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.0237+01:00"
+    created: "2026-03-17T14:13:45.636933+01:00"
     description: A Helm chart for Kubernetes
     digest: c9803cb5241c6818973df3fab76a5e698c6a285a768e6bfa7250541cc1090924
     name: reporting
@@ -1943,7 +1966,7 @@ entries:
     version: 0.3.4
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.023195+01:00"
+    created: "2026-03-17T14:13:45.636406+01:00"
     description: A Helm chart for Kubernetes
     digest: 7373111b2f23fe71681a318b47b3b13f9f756fbb132b0bd4e14ccb65fd669fa2
     name: reporting
@@ -1953,7 +1976,7 @@ entries:
     version: 0.3.3
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
-    created: "2026-03-17T13:53:46.022687+01:00"
+    created: "2026-03-17T14:13:45.635957+01:00"
     description: A Helm chart for Kubernetes
     digest: b292b4c67a960951f5dd46f27d6f92fa66be8625a51abcd494247f2bbc50983e
     name: reporting
@@ -1964,7 +1987,26 @@ entries:
   status:
   - apiVersion: v2
     appVersion: "2.0"
-    created: "2026-03-17T13:53:46.133684+01:00"
+    created: "2026-03-17T14:13:45.753508+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    description: A Helm chart for Kubernetes
+    digest: 79dc04db9152c5b7a9a6d2278920e210623b7ddaaf685d55b96a3e4cca64755a
+    name: status
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/status-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: "2.0"
+    created: "2026-03-17T14:13:45.746839+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -1983,7 +2025,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: "2.0"
-    created: "2026-03-17T13:53:46.127124+01:00"
+    created: "2026-03-17T14:13:45.740739+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2002,7 +2044,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: "2.0"
-    created: "2026-03-17T13:53:46.12065+01:00"
+    created: "2026-03-17T14:13:45.734322+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2022,7 +2064,30 @@ entries:
   workspace:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.202+01:00"
+    created: "2026-03-17T14:13:45.834162+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.x.x
+    description: A Helm chart for Kubernetes
+    digest: a63e437821073e6209d530ce81008e6bb28aef131d6669bf93bc3a631facbba5
+    name: workspace
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/workspace-0.5.3.tgz
+    version: 0.5.3
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2026-03-17T14:13:45.824387+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2045,7 +2110,7 @@ entries:
     version: 0.5.2
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.192261+01:00"
+    created: "2026-03-17T14:13:45.813955+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2068,7 +2133,7 @@ entries:
     version: 0.5.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.182519+01:00"
+    created: "2026-03-17T14:13:45.803753+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2091,7 +2156,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.172235+01:00"
+    created: "2026-03-17T14:13:45.793325+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2114,7 +2179,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.163697+01:00"
+    created: "2026-03-17T14:13:45.784851+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2137,7 +2202,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.155339+01:00"
+    created: "2026-03-17T14:13:45.776019+01:00"
     dependencies:
     - condition: valkey.enabled
       name: valkey
@@ -2160,7 +2225,7 @@ entries:
     version: 0.2.0
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.146987+01:00"
+    created: "2026-03-17T14:13:45.767511+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2183,7 +2248,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-03-17T13:53:46.138343+01:00"
+    created: "2026-03-17T14:13:45.759023+01:00"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -2200,4 +2265,4 @@ entries:
     urls:
     - https://unicef.github.io/hope-helm-charts/workspace-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-17T13:53:45.277972+01:00"
+generated: "2026-03-17T14:13:44.870058+01:00"

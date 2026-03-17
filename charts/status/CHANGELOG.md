@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.3 (2026-03-17)
+* Redis: fix replica missing command/args/volumeMount defaults (same as master)
+
 ## 0.1.2 (2026-03-12)
 * Redis: use official `redis:8` with custom ConfigMap
 
