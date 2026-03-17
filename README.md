@@ -17,6 +17,42 @@ This repository contains Helm charts for deploying components of the HOPE projec
 ## KeyVault
 Typically, Azure KeyVault is used to retrieve secrets in deployments, but it is not a strict requirement. The charts use the [Secrets Store CSI Driver](https://secrets-store-csi-driver.sigs.k8s.io/) to communicate with Azure KeyVault for secure secret management across different services.
 
+## Testing charts locally
+
+Before publishing, you can validate and render charts locally:
+
+1. **Update dependencies and lint** (same as CI):
+   ```bash
+   cd hope-helm-charts
+   for chart in core deduplication-engine reporting workspace payment-gateway status aurora; do
+     helm dependency update charts/$chart
+     helm lint charts/$chart \
+       --set keyvault.tenantId=foo \
+       --set keyvault.userAssignedIdentityID=bar \
+       --set keyvault.keyvaultName=baz \
+       --set keyvault.envMappings=null
+   done
+   ```
+
+2. **Render templates** (no cluster needed) to inspect manifests:
+   ```bash
+   # Render full chart (use keyvault placeholders if keyvault.enabled)
+   helm template hope charts/core -f charts/core/values.yaml \
+     --set keyvault.tenantId=foo --set keyvault.userAssignedIdentityID=bar \
+     --set keyvault.keyvaultName=baz --set keyvault.envMappings=null \
+     --set redis.master.extraVolumes[0].name=redis-conf \
+     --set redis.master.extraVolumes[0].configMap.name=hope-redis-config \
+     | head -200
+   ```
+   To only check the Redis ConfigMap: `helm template hope charts/core -f charts/core/values.yaml -s templates/redis-config-configmap.yaml`
+
+3. **Dry-run install** (validates against a real cluster if you have one):
+   ```bash
+   helm install hope charts/core -f charts/core/values.yaml --dry-run --debug \
+     --set keyvault.tenantId=foo --set keyvault.userAssignedIdentityID=bar \
+     --set keyvault.keyvaultName=baz --set keyvault.envMappings=null
+   ```
+
 ## Usage
 Add Helm repo:
 ```bash

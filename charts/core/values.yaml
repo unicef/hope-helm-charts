@@ -237,6 +237,22 @@ redis:
   auth:
     enabled: false
 
+  # Use custom config (no loadmodule) for official redis:8 image — same as pipelines/redis/cd/stg.
+  # Set master.extraVolumes in deploy values with configMap name "<release-name>-redis-config".
+  master:
+    command: ["redis-server"]
+    args: ["/config/redis.conf"]
+    extraVolumeMounts:
+      - name: redis-conf
+        mountPath: /config
+        readOnly: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      allowPrivilegeEscalation: false
+    podSecurityContext:
+      fsGroup: 999
+
 prometheus-redis-exporter:
   enabled: true
 

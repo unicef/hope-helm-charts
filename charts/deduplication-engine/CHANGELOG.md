@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.14.2 (2026-03-12)
-* Redis: default image to official `redis:8`
+* Redis: use official `redis:8` with custom ConfigMap
 
 ## 0.14.1 (2026-03-12)
 * Flower: use backend.config CELERY_BROKER_URL when set instead of KeyVault (fixes shared Redis envs)
