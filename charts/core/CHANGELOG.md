@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.7 (2026-03-26)
+* Ingress: support `ingress.hosts` (list of hostnames); when unset, `ingress.host` (single) remains supported for backward compatibility
+
 ## 0.12.6 (2026-03-12)
 * Redis: use official `redis:8` with custom ConfigMap
 

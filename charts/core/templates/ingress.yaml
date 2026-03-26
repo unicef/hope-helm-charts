@@ -1,8 +1,13 @@
 {{- if .Values.ingress.enabled -}}
+{{- $fullName := include "core.fullname" . -}}
+{{- $flowerEnabled := .Values.flower.enabled -}}
+{{- $flowerPort := .Values.flower.service.port -}}
+{{- $backendPort := .Values.backend.service.port -}}
+{{- $hosts := .Values.ingress.hosts | default (list .Values.ingress.host) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "core.fullname" . }}-ingress
+  name: {{ $fullName }}-ingress
   labels:
     {{- include "core.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -12,23 +17,25 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
-    - host: {{ .Values.ingress.host }}
+    {{- range $hosts }}
+    - host: {{ . }}
       http:
         paths:
-        {{- if .Values.flower.enabled }}
+        {{- if $flowerEnabled }}
         - path: /flower/
           pathType: Prefix
           backend:
             service:
-              name: {{ include "core.fullname" . }}-celery-flower
+              name: {{ $fullName }}-celery-flower
               port:
-                number: {{ .Values.flower.service.port }}
+                number: {{ $flowerPort }}
         {{- end }}
         - path: /
           pathType: Prefix
           backend:
             service:
-              name: {{ include "core.fullname" . }}-backend
+              name: {{ $fullName }}-backend
               port:
-                number: {{ .Values.backend.service.port }}
+                number: {{ $backendPort }}
+    {{- end }}
 {{- end }}
