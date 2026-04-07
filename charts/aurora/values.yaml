@@ -115,5 +115,9 @@ postgresql:
       user: postgres
       password: ""
 
+celery:
+  enabled: false
+  replicaCount: 1
+
 rollme:
   enabled: false
