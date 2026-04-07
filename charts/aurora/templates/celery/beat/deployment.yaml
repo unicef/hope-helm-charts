@@ -1,0 +1,54 @@
+{{- if .Values.celery.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aurora.fullname" . }}-celery-beat
+  labels:
+    {{- include "aurora.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "aurora.selectorLabels" . | nindent 6 }}
+      service: "celery-beat"
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.rollme.enabled }}
+        rollme: {{ randAlphaNum 5 | quote }}
+      {{- end }}
+      labels:
+        {{- include "aurora.selectorLabels" . | nindent 8 }}
+        service: "celery-beat"
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "aurora.serviceAccountName" . }}
+      containers:
+        - name: celery
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["beat"]
+          envFrom:
+          {{ include "keyvault.secretRef" . | nindent 12 }}
+            - configMapRef:
+                name: {{ include "aurora.fullname" . }}-aurora
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{ include "keyvault.volumeMounts" . | nindent 12 }}
+      volumes:
+        {{ include "keyvault.volumes" . | nindent 8 }}
+{{- end }}
