@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 (2026-04-07)
+* Fix celery worker/beat to use `args: ["run"]` with `START_WORKER`/`START_CRON` env vars (circusd entrypoint)
+
 ## 0.2.0 (2026-04-07)
 * Add optional Celery worker and beat deployments (`celery.enabled`, `celery.replicaCount`)
 

@@ -38,7 +38,16 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["beat"]
+          args: ["run"]
+          env:
+            - name: START_PROXY
+              value: "false"
+            - name: START_APP
+              value: "false"
+            - name: START_WORKER
+              value: "false"
+            - name: START_CRON
+              value: "true"
           envFrom:
           {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
