@@ -44,6 +44,8 @@ spec:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
             - name: dde-model-data
               mountPath: /dde-model
+            - name: home-hope
+              mountPath: /home/hope
             {{- if .Values.dataPvc.enabled }}
             - name: dde-data
               mountPath: /var/data
@@ -54,6 +56,8 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "deduplication-engine.fullname" . }}-model-data
             readOnly: true
+        - name: home-hope
+          emptyDir: {}
         {{- if .Values.dataPvc.enabled }}
         - name: dde-data
           persistentVolumeClaim:
