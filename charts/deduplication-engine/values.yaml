@@ -63,6 +63,13 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# PVC for model data (backend + celery worker + beat + model-downloader job).
+# mountPath controls where the volume is mounted; set to /model for new deployments.
+modelPvc:
+  mountPath: /dde-model
+  size: 2Gi
+  storageClassName: azurefile
+
 # Optional PVC for persistent data mounted at /var/data (backend + celery worker + beat).
 dataPvc:
   enabled: false

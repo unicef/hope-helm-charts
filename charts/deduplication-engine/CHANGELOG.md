@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.14.3 (2026-04-15)
-* Mount emptyDir at `/home/hope` in model-downloader job, backend, celery worker and beat to allow OFIQ to create its data directory
+* Add configurable `modelPvc.mountPath` (default: `/dde-model`) for model data volume across all workloads; also expose `modelPvc.size` and `modelPvc.storageClassName` in values
 
 ## 0.14.2 (2026-03-12)
 * Redis: use official `redis:8` with custom ConfigMap

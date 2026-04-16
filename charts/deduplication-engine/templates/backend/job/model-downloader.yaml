@@ -32,15 +32,11 @@ spec:
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
             - name: dde-model-data
-              mountPath: /dde-model
-            - name: home-hope
-              mountPath: /home/hope
+              mountPath: {{ .Values.modelPvc.mountPath }}
       restartPolicy: Never
       volumes:
         {{ include "keyvault.volumes" . | nindent 8 }}
         - name: dde-model-data
           persistentVolumeClaim:
             claimName: {{ include "deduplication-engine.fullname" . }}-model-data
-        - name: home-hope
-          emptyDir: {}
   backoffLimit: 3
