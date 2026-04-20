@@ -67,7 +67,7 @@ autoscaling:
 # mountPath controls where the volume is mounted; set to /model for new deployments.
 modelPvc:
   mountPath: /dde-model
-  size: 2Gi
+  size: 4Gi
   storageClassName: azurefile
 
 # Optional PVC for persistent data mounted at /var/data (backend + celery worker + beat).
