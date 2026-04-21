@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.4 (2026-04-20)
+* Increased memory to 4gGb
+
 ## 0.14.3 (2026-04-15)
 * Add configurable `modelPvc.mountPath` (default: `/dde-model`) for model data volume across all workloads; also expose `modelPvc.size` and `modelPvc.storageClassName` in values
 
