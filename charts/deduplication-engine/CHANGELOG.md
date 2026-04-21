@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.5 (2026-04-21)
+* Fixed volume path
+
 ## 0.14.4 (2026-04-20)
 * Increased memory to 4gGb
 
