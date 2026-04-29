@@ -50,7 +50,7 @@ spec:
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
             - name: dde-model-data
-              mountPath: /dde-model
+              mountPath: {{ .Values.modelPvc.mountPath }}
             {{- if .Values.dataPvc.enabled }}
             - name: dde-data
               mountPath: /var/data

@@ -32,7 +32,7 @@ spec:
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
             - name: dde-model-data
-              mountPath: /dde-model
+              mountPath: {{ .Values.modelPvc.mountPath }}
       restartPolicy: Never
       volumes:
         {{ include "keyvault.volumes" . | nindent 8 }}
