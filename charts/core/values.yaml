@@ -31,9 +31,14 @@ nginx:
 celery:
   podAnnotations: {}
 
-  replicaCount: 1
   autoscaling:
     enabled: true
+
+  defaultWorker:
+    replicaCount: 1
+
+  periodicWorker:
+    replicaCount: 1
 
 flower:
   enabled: false

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.0 (2026-04-24)
+* Split celery worker into two separate deployments: `celery-worker-default` (`-Q default`) and `celery-worker-periodic` (`-Q periodic`)
+* Renamed `celery.replicaCount` to `celery.defaultWorker.replicaCount`; added `celery.periodicWorker.replicaCount`
+
 ## 0.12.7 (2026-03-26)
 * Ingress: support `ingress.hosts` (list of hostnames); when unset, `ingress.host` (single) remains supported for backward compatibility
 
