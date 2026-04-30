@@ -2,7 +2,7 @@ apiVersion: v2
 name: core
 description: A Helm chart for Kubernetes
 type: application
-version: 0.13.0
+version: 0.14.0
 appVersion: "core-2.10.1"
 
 dependencies:
@@ -14,6 +14,11 @@ dependencies:
     version: 24.1.8
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: redis.enabled
+  - name: redis
+    version: 24.1.8
+    repository: oci://registry-1.docker.io/bitnamicharts
+    alias: redis-celery
+    condition: redis-celery.enabled
   - name: prometheus-redis-exporter
     version: 6.9.0
     repository: https://prometheus-community.github.io/helm-charts

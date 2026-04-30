@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.0 (2026-04-29)
+* Add optional `redis-celery` subchart dependency (disabled by default) to support a dedicated Celery broker Redis instance separate from the cache Redis
+
 ## 0.13.0 (2026-04-24)
 * Split celery worker into two separate deployments: `celery-worker-default` (`-Q default`) and `celery-worker-periodic` (`-Q periodic`)
 * Renamed `celery.replicaCount` to `celery.defaultWorker.replicaCount`; added `celery.periodicWorker.replicaCount`

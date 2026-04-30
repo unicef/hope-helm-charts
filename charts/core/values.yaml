@@ -258,6 +258,31 @@ redis:
     podSecurityContext:
       fsGroup: 999
 
+redis-celery:
+  enabled: false
+  image:
+    registry: docker.io
+    repository: redis
+    tag: "8"
+  architecture: standalone
+
+  auth:
+    enabled: false
+
+  master:
+    command: ["redis-server"]
+    args: ["/config/redis.conf"]
+    extraVolumeMounts:
+      - name: redis-conf
+        mountPath: /config
+        readOnly: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      allowPrivilegeEscalation: false
+    podSecurityContext:
+      fsGroup: 999
+
 prometheus-redis-exporter:
   enabled: true
 
