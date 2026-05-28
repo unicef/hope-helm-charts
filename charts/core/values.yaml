@@ -78,6 +78,10 @@ ingress:
   #      - chart-example.local
 
 backend:
+  # Set to true when Constance uses DatabaseBackend instead of Redis.
+  # Omits CONSTANCE_REDIS_CONNECTION from the backend secret and deployment env.
+  constanceUseDatabase: false
+
   admin:
     create: true
     username: admin

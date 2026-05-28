@@ -139,11 +139,13 @@ Create the name of the service account to use
         secretKeyRef:
           name: {{ include "core.fullname" . }}-backend
           key: CACHE_LOCATION
+    {{- if not .Values.backend.constanceUseDatabase }}
     - name: CONSTANCE_REDIS_CONNECTION
       valueFrom:
         secretKeyRef:
           name: {{ include "core.fullname" . }}-backend
           key: CONSTANCE_REDIS_CONNECTION
+    {{- end }}
     {{- else if or (not .Values.keyvault.enabled) (index .Values.backend.config "CELERY_BROKER_URL") }}
     {{- if not (index .Values.backend.config "CELERY_BROKER_URL") }}
     - name: CELERY_BROKER_URL
@@ -152,8 +154,10 @@ Create the name of the service account to use
       value: {{ .Values.backend.celeryResultBackend | quote }}
     - name: CACHE_LOCATION
       value: {{ .Values.backend.cacheLocation | quote }}
+    {{- if not .Values.backend.constanceUseDatabase }}
     - name: CONSTANCE_REDIS_CONNECTION
       value: {{ .Values.backend.constanceRedisConnection | quote }}
+    {{- end }}
     {{- end }}
     {{- else }}
     - name: CELERY_BROKER_URL
@@ -171,11 +175,13 @@ Create the name of the service account to use
         secretKeyRef:
           name: {{ .Values.keyvault.secretName }}
           key: CACHE_LOCATION
+    {{- if not .Values.backend.constanceUseDatabase }}
     - name: CONSTANCE_REDIS_CONNECTION
       valueFrom:
         secretKeyRef:
           name: {{ .Values.keyvault.secretName }}
           key: CONSTANCE_REDIS_CONNECTION
+    {{- end }}
     {{- end }}
 
     {{- if .Values.keyvault.enabled }}

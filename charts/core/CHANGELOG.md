@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.1 (2026-05-28)
+* Add `backend.constanceUseDatabase` flag (default: `false`). When `true`, omits `CONSTANCE_REDIS_CONNECTION` from the backend secret and pod env — use when Constance is configured with `DatabaseBackend`.
+
 ## 0.14.0 (2026-04-29)
 * Add optional `redis-celery` subchart dependency (disabled by default) to support a dedicated Celery broker Redis instance separate from the cache Redis
 
