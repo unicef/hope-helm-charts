@@ -9,6 +9,9 @@ backend:
     type: ClusterIP
     port: 8000
 
+  config:
+    IMAGES_ROOT: "/var/data"
+
 celery:
   replicaCount: 1
 

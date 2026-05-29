@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.7 (2026-05-29)
+* Add `IMAGES_ROOT: /var/data` default to `backend.config`
+
 ## 0.14.5 (2026-04-21)
 * Fixed volume path
 
