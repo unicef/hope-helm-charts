@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.2 (2026-06-10)
+* Upgrade Elasticsearch image from `8.17.3-debian-12-r0` to `8.18.0` (bitnamilegacy)
+
 ## 0.14.1 (2026-05-28)
 * Add `backend.constanceUseDatabase` flag (default: `false`). When `true`, omits `CONSTANCE_REDIS_CONNECTION` from the backend secret and pod env — use when Constance is configured with `DatabaseBackend`.
 
