@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.3 (2026-06-10)
+* Add `es-hope-search` and `es-hope-index` ES 9 clusters (Bitnami chart 22.1.6, image `docker.elastic.co/elasticsearch/elasticsearch:9.0.1`); disabled by default, enable per env during migration
+* Bump cluster A Bitnami elasticsearch chart 21.4.8 → 22.1.6 (image unchanged: `bitnamilegacy/elasticsearch:8.18.0`)
+* Add `elasticsearch.hostOverride` to cut over `ELASTICSEARCH_HOST` to `es-hope-search` during migration
+* Add `elasticsearch.indexHost` to expose `ELASTICSEARCH_INDEX_HOST` for the reindex playbook
+
 ## 0.14.2 (2026-06-10)
 * Upgrade Elasticsearch image from `8.17.3-debian-12-r0` to `8.18.0` (bitnamilegacy)
 
