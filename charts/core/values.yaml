@@ -294,6 +294,13 @@ prometheus-redis-exporter:
 
 elasticsearch:
   enabled: true
+  # hostOverride: set to switch ELASTICSEARCH_HOST to es-hope-search during migration.
+  # Example: "http://<release>-es-hope-search-master:9200"
+  # Leave empty to auto-construct from release name (cluster A).
+  hostOverride: ""
+  # indexHost: when set, adds ELASTICSEARCH_INDEX_HOST to the backend secret.
+  # Example: "http://<release>-es-hope-index-master:9200"
+  indexHost: ""
   image:
     registry: docker.io
     repository: bitnamilegacy/elasticsearch
@@ -303,10 +310,180 @@ elasticsearch:
     repository: bitnamilegacy/os-shell
     tag: 12-debian-12-r51
   plugins: "analysis-phonetic,analysis-icu"
+  enableDefaultInitContainers: true
   master:
     replicaCount: 1
+  data:
+    replicaCount: 0
   coordinating:
     replicaCount: 1
+  ingest:
+    enabled: false
+
+# =============================================================================
+# ES 9 ENABLING PLAN
+#
+# Two clusters: es-hope-search (search/dedup) and es-hope-index (reindex playbook).
+# Both disabled by default. Roll out per env: dev → stg → trn → prd.
+#
+# DEV / STG / TRN  (1 master + 1 coordinating — mirrors cluster A topology)
+# -----------------------------------------------------------------------------------------
+#   Step 1 — spin up es-hope-search:
+#     es-hope-search:
+#       enabled: true
+#     Verify: kubectl port-forward svc/<release>-es-hope-search-master 9201:9200 -n <ns>
+#             curl http://localhost:9201/_cluster/health?pretty
+#             curl http://localhost:9201/_cat/plugins?v
+#
+#   Step 2 — populate from Postgres:
+#     python manage.py rebuild_program_indexes
+#     curl http://localhost:9201/_cat/indices?v
+#
+#   Step 3 — cut over search traffic:
+#     elasticsearch:
+#       hostOverride: "http://<release>-es-hope-search-master:9200"
+#
+#   Step 4 — spin up es-hope-index (when dev team implements reindex playbook):
+#     es-hope-index:
+#       enabled: true
+#     elasticsearch:
+#       indexHost: "http://<release>-es-hope-index-master:9200"
+#
+# PRD  (full HA: 3 master + 2 data + 2 coordinating per cluster)
+# -----------------------------------------------------------------------------------------
+#   es-hope-search:
+#     enabled: true
+#     master:
+#       replicaCount: 3
+#       extraConfig: |   # override initial_master_nodes to list all 3
+#         ...
+#     data:
+#       replicaCount: 2
+#     coordinating:
+#       replicaCount: 2
+#   elasticsearch:
+#     hostOverride: "http://<release>-es-hope-search-coordinating:9200"
+#
+#   (same pattern for es-hope-index)
+#
+# CLEANUP  (chart v0.15.0, after all 4 envs migrated)
+# -----------------------------------------------------------------------------------------
+#   Remove the original `elasticsearch` (Bitnami) sub-chart dependency.
+#   Remove elasticsearch.hostOverride and this comment block.
+# =============================================================================
+
+# Shared base — official ES 9 image with Bitnami 22.1.6 chart.
+# enableDefaultInitContainers: false skips copy-default-plugins (which requires Bitnami scripts).
+# Plugins and sysctl handled by custom master/coordinating initContainers instead.
+x-es9-base: &es9-base
+  image:
+    registry: docker.elastic.co
+    repository: elasticsearch/elasticsearch
+    tag: "9.0.1"
+  sysctlImage:
+    enabled: false
+  enableDefaultInitContainers: false
+  plugins: ""
+  resources:
+    requests:
+      cpu: "25m"
+      memory: "512Mi"
+    limits:
+      cpu: "2000m"
+      memory: "2Gi"
+  # extraConfig is a template string — {{ include ... }} is resolved at helm template time.
+  # Provides ES config at /usr/share/elasticsearch/config/elasticsearch.yml via extraVolumeMounts below.
+  extraConfig: |
+    path.data: /bitnami/elasticsearch/data
+    cluster.name: {{ include "common.names.fullname" . }}
+    xpack.security.enabled: false
+    xpack.security.http.ssl.enabled: false
+    discovery.seed_hosts:
+      - {{ include "common.names.fullname" . }}-master-hl
+    cluster.initial_master_nodes:
+      - {{ include "common.names.fullname" . }}-master-0
+  data:
+    replicaCount: 0
+  ingest:
+    enabled: false
+
+# Shared node-group config — applied to both master and coordinating via YAML merge.
+x-es9-nodegroup: &es9-nodegroup
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    readOnlyRootFilesystem: false
+    allowPrivilegeEscalation: false
+  # sysctl: set vm.max_map_count per pod (needed since enableDefaultInitContainers: false skips sysctl).
+  # install-plugins: writes analysis-phonetic + analysis-icu into empty-dir/app-plugins-dir,
+  #   which the main container mounts at /usr/share/elasticsearch/plugins (see extraVolumeMounts).
+  initContainers:
+    - name: configure-sysctl
+      image: "docker.elastic.co/elasticsearch/elasticsearch:9.0.1"
+      command: ['sysctl', '-w', 'vm.max_map_count=262144']
+      securityContext:
+        privileged: true
+        runAsUser: 0
+    - name: install-plugins
+      image: "docker.elastic.co/elasticsearch/elasticsearch:9.0.1"
+      command:
+        - bash
+        - -c
+        - |
+          elasticsearch-plugin install --batch analysis-phonetic analysis-icu
+      volumeMounts:
+        - name: empty-dir
+          mountPath: /usr/share/elasticsearch/plugins
+          subPath: app-plugins-dir
+  extraVolumeMounts:
+    - name: empty-dir
+      mountPath: /usr/share/elasticsearch/plugins
+      subPath: app-plugins-dir
+    - name: config
+      mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+      subPath: my_elasticsearch.yml
+  customStartupProbe:
+    tcpSocket:
+      port: 9200
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 30
+  customReadinessProbe:
+    httpGet:
+      path: /_cluster/health?local=true
+      port: 9200
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+  customLivenessProbe:
+    tcpSocket:
+      port: 9200
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    failureThreshold: 5
+
+es-hope-search:
+  <<: *es9-base
+  enabled: false
+  master:
+    <<: *es9-nodegroup
+    replicaCount: 1
+  # coordinating: Bitnami 22.1.6 coordinating template always runs copy-default-plugins (no enableDefaultInitContainers gate).
+  # That init container fails with the official image. Keep at 0 for dev/stg/trn.
+  # For prod, override in hope-deployment values with explicit workaround.
+  coordinating:
+    replicaCount: 0
+
+es-hope-index:
+  <<: *es9-base
+  enabled: false
+  master:
+    <<: *es9-nodegroup
+    replicaCount: 1
+  coordinating:
+    replicaCount: 0
 
 keyvault:
   enabled: true
