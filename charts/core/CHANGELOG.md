@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.4 (2026-06-18)
+* Fix `network.host: 0.0.0.0` in `x-es9-base` shared config — ES 9 defaults to `127.0.0.1` when security is disabled, causing startup probe to fail with connection refused on the pod IP. Affects both `es-hope-search` and `es-hope-index`.
+
 ## 0.14.3 (2026-06-10)
 * Add `es-hope-search` and `es-hope-index` ES 9 clusters (Bitnami chart 22.1.6, image `docker.elastic.co/elasticsearch/elasticsearch:9.0.1`); disabled by default, enable per env during migration
 * Bump cluster A Bitnami elasticsearch chart 21.4.8 → 22.1.6 (image unchanged: `bitnamilegacy/elasticsearch:8.18.0`)

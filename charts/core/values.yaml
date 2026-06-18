@@ -398,6 +398,7 @@ x-es9-base: &es9-base
     cluster.name: {{ include "common.names.fullname" . }}
     xpack.security.enabled: false
     xpack.security.http.ssl.enabled: false
+    network.host: 0.0.0.0
     discovery.seed_hosts:
       - {{ include "common.names.fullname" . }}-master-hl
     cluster.initial_master_nodes:
