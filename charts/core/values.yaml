@@ -373,8 +373,8 @@ elasticsearch:
 # =============================================================================
 
 # Shared base — official ES 9 image with Bitnami 22.1.6 chart.
-# enableDefaultInitContainers: false skips copy-default-plugins (which requires Bitnami scripts).
-# Plugins and sysctl handled by custom master/coordinating initContainers instead.
+# enableDefaultInitContainers: false skips copy-default-plugins in master, data, and ingest templates
+# (each gates it behind this flag). Coordinating is a special case — see x-es9-coordinating below.
 x-es9-base: &es9-base
   image:
     registry: docker.elastic.co
@@ -392,7 +392,8 @@ x-es9-base: &es9-base
       cpu: "2000m"
       memory: "2Gi"
   # extraConfig is a template string — {{ include ... }} is resolved at helm template time.
-  # Provides ES config at /usr/share/elasticsearch/config/elasticsearch.yml via extraVolumeMounts below.
+  # Rendered into a ConfigMap mounted at /usr/share/elasticsearch/config/elasticsearch.yml
+  # via extraVolumeMounts in x-es9-nodegroup and x-es9-coordinating.
   extraConfig: |
     path.data: /bitnami/elasticsearch/data
     cluster.name: {{ include "common.names.fullname" . }}
@@ -408,7 +409,11 @@ x-es9-base: &es9-base
   ingest:
     enabled: false
 
-# Shared node-group config — applied to both master and coordinating via YAML merge.
+# Master node config — no node.roles set, so each pod runs all roles (master + data + ingest + coordinating).
+# Scale master.replicaCount per env (1 for dev, 3 for stg/prd) instead of using separate node types.
+# configure-sysctl: sets vm.max_map_count=262144 (enableDefaultInitContainers: false skips Bitnami's sysctl).
+# volume-permissions: chowns data dir to 1000:0 so official ES image can write it.
+# install-plugins: downloads analysis-phonetic + analysis-icu into emptyDir/app-plugins-dir.
 x-es9-nodegroup: &es9-nodegroup
   containerSecurityContext:
     enabled: true
@@ -416,9 +421,6 @@ x-es9-nodegroup: &es9-nodegroup
     runAsGroup: 1000
     readOnlyRootFilesystem: false
     allowPrivilegeEscalation: false
-  # sysctl: set vm.max_map_count per pod (needed since enableDefaultInitContainers: false skips sysctl).
-  # install-plugins: writes analysis-phonetic + analysis-icu into empty-dir/app-plugins-dir,
-  #   which the main container mounts at /usr/share/elasticsearch/plugins (see extraVolumeMounts).
   initContainers:
     - name: configure-sysctl
       image: "docker.elastic.co/elasticsearch/elasticsearch:9.0.1"
@@ -426,6 +428,19 @@ x-es9-nodegroup: &es9-nodegroup
       securityContext:
         privileged: true
         runAsUser: 0
+    - name: volume-permissions
+      image: "busybox:1.36"
+      securityContext:
+        runAsUser: 0
+      command:
+        - sh
+        - -c
+        - |
+          chown -R 1000:0 /bitnami/elasticsearch/data &&
+          chmod -R g+rwX /bitnami/elasticsearch/data
+      volumeMounts:
+        - name: data
+          mountPath: /bitnami/elasticsearch/data
     - name: install-plugins
       image: "docker.elastic.co/elasticsearch/elasticsearch:9.0.1"
       command:
@@ -471,11 +486,6 @@ es-hope-search:
   master:
     <<: *es9-nodegroup
     replicaCount: 1
-  # coordinating: Bitnami 22.1.6 coordinating template always runs copy-default-plugins (no enableDefaultInitContainers gate).
-  # That init container fails with the official image. Keep at 0 for dev/stg/trn.
-  # For prod, override in hope-deployment values with explicit workaround.
-  coordinating:
-    replicaCount: 0
 
 es-hope-index:
   <<: *es9-base
@@ -483,8 +493,6 @@ es-hope-index:
   master:
     <<: *es9-nodegroup
     replicaCount: 1
-  coordinating:
-    replicaCount: 0
 
 keyvault:
   enabled: true
