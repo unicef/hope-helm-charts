@@ -1,0 +1,43 @@
+{{- if index .Values "es-search" "enabled" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-es-search-master
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: es-search
+  ports:
+    - name: rest
+      port: 9200
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      targetPort: 9300
+{{- end }}
+---
+{{- if index .Values "es-index" "enabled" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-es-index-master
+  labels:
+    {{- include "core.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: es-index
+  ports:
+    - name: rest
+      port: 9200
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      targetPort: 9300
+{{- end }}

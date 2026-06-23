@@ -4,8 +4,9 @@
 * Add `volume-permissions` initContainer to `x-es9-nodegroup`: chowns `/bitnami/elasticsearch/data` to `1000:0` so the official ES image (runAsUser 1000) can write its data dir
 * Set `coordinating.replicaCount: 0` in `x-es9-base`: Bitnami chart defaults to 2 coordinating pods; all-roles master design needs none
 * Each ES9 cluster runs master-only nodes with all roles; scale `master.replicaCount` per env (1 for dev/eph, 3 for stg/prd)
+* Add `es-master-services.yaml`: non-headless ClusterIP services `<release>-es-search-master` and `<release>-es-index-master` targeting master pods (Bitnami's built-in ClusterIP targets coordinating-only, which is empty in all-roles master topology)
 * Fix `ELASTICSEARCH_HOST` pod env reference: check `es-search.enabled` alongside `elasticsearch.enabled`
-* Fix `ELASTICSEARCH_HOST` fallback in backend secret: use `<release>-es-search:9200` (actual ClusterIP service)
+* Fix `ELASTICSEARCH_HOST` fallback in backend secret: use `<release>-es-search-master:9200`
 * Add `ELASTICSEARCH_INDEX_HOST` auto-construct in backend secret and pod env when `es-index.enabled: true`
 * Rename sub-chart aliases `es-hope-search` → `es-search` and `es-hope-index` → `es-index` (avoids double "hope" in pod names)
 
