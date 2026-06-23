@@ -294,12 +294,12 @@ prometheus-redis-exporter:
 
 elasticsearch:
   enabled: true
-  # hostOverride: set to switch ELASTICSEARCH_HOST to es-hope-search during migration.
-  # Example: "http://<release>-es-hope-search-master:9200"
+  # hostOverride: set to switch ELASTICSEARCH_HOST to es-search during migration.
+  # Example: "http://<release>-es-search-master:9200"
   # Leave empty to auto-construct from release name (cluster A).
   hostOverride: ""
   # indexHost: when set, adds ELASTICSEARCH_INDEX_HOST to the backend secret.
-  # Example: "http://<release>-es-hope-index-master:9200"
+  # Example: "http://<release>-es-index-master:9200"
   indexHost: ""
   image:
     registry: docker.io
@@ -323,15 +323,15 @@ elasticsearch:
 # =============================================================================
 # ES 9 ENABLING PLAN
 #
-# Two clusters: es-hope-search (search/dedup) and es-hope-index (reindex playbook).
+# Two clusters: es-search (search/dedup) and es-index (reindex playbook).
 # Both disabled by default. Roll out per env: dev → stg → trn → prd.
 #
 # DEV / STG / TRN  (1 master + 1 coordinating — mirrors cluster A topology)
 # -----------------------------------------------------------------------------------------
-#   Step 1 — spin up es-hope-search:
-#     es-hope-search:
+#   Step 1 — spin up es-search:
+#     es-search:
 #       enabled: true
-#     Verify: kubectl port-forward svc/<release>-es-hope-search-master 9201:9200 -n <ns>
+#     Verify: kubectl port-forward svc/<release>-es-search-master 9201:9200 -n <ns>
 #             curl http://localhost:9201/_cluster/health?pretty
 #             curl http://localhost:9201/_cat/plugins?v
 #
@@ -341,17 +341,17 @@ elasticsearch:
 #
 #   Step 3 — cut over search traffic:
 #     elasticsearch:
-#       hostOverride: "http://<release>-es-hope-search-master:9200"
+#       hostOverride: "http://<release>-es-search-master:9200"
 #
-#   Step 4 — spin up es-hope-index (when dev team implements reindex playbook):
-#     es-hope-index:
+#   Step 4 — spin up es-index (when dev team implements reindex playbook):
+#     es-index:
 #       enabled: true
 #     elasticsearch:
-#       indexHost: "http://<release>-es-hope-index-master:9200"
+#       indexHost: "http://<release>-es-index-master:9200"
 #
 # PRD  (full HA: 3 master + 2 data + 2 coordinating per cluster)
 # -----------------------------------------------------------------------------------------
-#   es-hope-search:
+#   es-search:
 #     enabled: true
 #     master:
 #       replicaCount: 3
@@ -362,9 +362,9 @@ elasticsearch:
 #     coordinating:
 #       replicaCount: 2
 #   elasticsearch:
-#     hostOverride: "http://<release>-es-hope-search-coordinating:9200"
+#     hostOverride: "http://<release>-es-search-coordinating:9200"
 #
-#   (same pattern for es-hope-index)
+#   (same pattern for es-index)
 #
 # CLEANUP  (chart v0.15.0, after all 4 envs migrated)
 # -----------------------------------------------------------------------------------------
@@ -480,14 +480,14 @@ x-es9-nodegroup: &es9-nodegroup
     periodSeconds: 10
     failureThreshold: 5
 
-es-hope-search:
+es-search:
   <<: *es9-base
   enabled: false
   master:
     <<: *es9-nodegroup
     replicaCount: 1
 
-es-hope-index:
+es-index:
   <<: *es9-base
   enabled: false
   master:

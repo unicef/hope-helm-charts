@@ -187,7 +187,7 @@ Create the name of the service account to use
     {{- if .Values.keyvault.enabled }}
     {{- end }}
 
-    {{- if or .Values.elasticsearch.enabled (index .Values "es-hope-search" "enabled") }}
+    {{- if or .Values.elasticsearch.enabled (index .Values "es-search" "enabled") }}
     - name: ELASTICSEARCH_HOST
       valueFrom:
         secretKeyRef:
@@ -202,5 +202,12 @@ Create the name of the service account to use
         secretKeyRef:
           name: {{ .Values.keyvault.secretName }}
           key: ELASTICSEARCH_HOST
+    {{- end }}
+    {{- if or .Values.elasticsearch.indexHost (index .Values "es-index" "enabled") }}
+    - name: ELASTICSEARCH_INDEX_HOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "core.fullname" . }}-backend
+          key: ELASTICSEARCH_INDEX_HOST
     {{- end }}
 {{- end -}}
