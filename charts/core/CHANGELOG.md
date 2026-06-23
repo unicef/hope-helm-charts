@@ -4,6 +4,7 @@
 * Add `volume-permissions` initContainer to `x-es9-nodegroup`: chowns `/bitnami/elasticsearch/data` to `1000:0` so the official ES image (runAsUser 1000) can write its data dir (`enableDefaultInitContainers: false` skips Bitnami's built-in volume-permissions)
 * Each ES9 cluster runs master-only nodes with all roles (master + data + ingest + coordinating); scale `master.replicaCount` per env (1 for dev/eph, 3 for stg/prd) — dedicated node-type separation is not justified by actual workload, and the search cluster is read-only (heavy reindexing goes to `es-hope-index`)
 * Update `x-es9-nodegroup` comment to reflect all-roles master design
+* Fix `ELASTICSEARCH_HOST` pod env reference: check `es-hope-search.enabled` alongside `elasticsearch.enabled` so the backend reads from the chart-generated secret (not keyvault) when cluster A is disabled but cluster B is active
 
 ## 0.14.4 (2026-06-18)
 * Fix `network.host: 0.0.0.0` in `x-es9-base` shared config — ES 9 defaults to `127.0.0.1` when security is disabled, causing startup probe to fail with connection refused on the pod IP. Affects both `es-hope-search` and `es-hope-index`.

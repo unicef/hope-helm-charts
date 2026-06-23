@@ -187,7 +187,7 @@ Create the name of the service account to use
     {{- if .Values.keyvault.enabled }}
     {{- end }}
 
-    {{- if .Values.elasticsearch.enabled }}
+    {{- if or .Values.elasticsearch.enabled (index .Values "es-hope-search" "enabled") }}
     - name: ELASTICSEARCH_HOST
       valueFrom:
         secretKeyRef:
