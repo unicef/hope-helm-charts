@@ -1,13 +1,13 @@
 # Changelog
 
 ## 0.14.5 (2026-06-23)
-* Add `volume-permissions` initContainer to `x-es9-nodegroup`: chowns `/bitnami/elasticsearch/data` to `1000:0` so the official ES image (runAsUser 1000) can write its data dir (`enableDefaultInitContainers: false` skips Bitnami's built-in volume-permissions)
-* Each ES9 cluster runs master-only nodes with all roles (master + data + ingest + coordinating); scale `master.replicaCount` per env (1 for dev/eph, 3 for stg/prd) — dedicated node-type separation is not justified by actual workload, and the search cluster is read-only (heavy reindexing goes to `es-hope-index`)
-* Update `x-es9-nodegroup` comment to reflect all-roles master design
-* Fix `ELASTICSEARCH_HOST` pod env reference: check `es-hope-search.enabled` alongside `elasticsearch.enabled`
-* Fix `ELASTICSEARCH_HOST` fallback in backend secret: use `hope-es-hope-search:9200` (the actual ClusterIP service)
+* Add `volume-permissions` initContainer to `x-es9-nodegroup`: chowns `/bitnami/elasticsearch/data` to `1000:0` so the official ES image (runAsUser 1000) can write its data dir
+* Set `coordinating.replicaCount: 0` in `x-es9-base`: Bitnami chart defaults to 2 coordinating pods; all-roles master design needs none
+* Each ES9 cluster runs master-only nodes with all roles; scale `master.replicaCount` per env (1 for dev/eph, 3 for stg/prd)
+* Fix `ELASTICSEARCH_HOST` pod env reference: check `es-search.enabled` alongside `elasticsearch.enabled`
+* Fix `ELASTICSEARCH_HOST` fallback in backend secret: use `<release>-es-search:9200` (actual ClusterIP service)
 * Add `ELASTICSEARCH_INDEX_HOST` auto-construct in backend secret and pod env when `es-index.enabled: true`
-* Rename sub-chart aliases `es-hope-search` → `es-search` and `es-hope-index` → `es-index` to avoid double "hope" in pod/service names (`hope-es-search-master-0` instead of `hope-es-hope-search-master-0`)
+* Rename sub-chart aliases `es-hope-search` → `es-search` and `es-hope-index` → `es-index` (avoids double "hope" in pod names)
 
 ## 0.14.4 (2026-06-18)
 * Fix `network.host: 0.0.0.0` in `x-es9-base` shared config — ES 9 defaults to `127.0.0.1` when security is disabled, causing startup probe to fail with connection refused on the pod IP. Affects both `es-hope-search` and `es-hope-index`.

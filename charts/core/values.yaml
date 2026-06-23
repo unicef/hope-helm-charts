@@ -393,7 +393,7 @@ x-es9-base: &es9-base
       memory: "2Gi"
   # extraConfig is a template string — {{ include ... }} is resolved at helm template time.
   # Rendered into a ConfigMap mounted at /usr/share/elasticsearch/config/elasticsearch.yml
-  # via extraVolumeMounts in x-es9-nodegroup and x-es9-coordinating.
+  # via extraVolumeMounts in x-es9-nodegroup.
   extraConfig: |
     path.data: /bitnami/elasticsearch/data
     cluster.name: {{ include "common.names.fullname" . }}
@@ -405,6 +405,8 @@ x-es9-base: &es9-base
     cluster.initial_master_nodes:
       - {{ include "common.names.fullname" . }}-master-0
   data:
+    replicaCount: 0
+  coordinating:
     replicaCount: 0
   ingest:
     enabled: false
