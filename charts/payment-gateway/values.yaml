@@ -10,10 +10,23 @@ backend:
 
   autoscaling:
     enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+# Resources shared by backend and celery worker unless celery.resources is set
+resources: {}
 
 celery:
+  replicaCount: 1
   autoscaling:
     enabled: false
+  # Resources for the celery worker (and beat, unless beatResources is set);
+  # falls back to the top-level resources for the worker
+  resources: {}
+  # Optional override for celery beat; falls back to celery.resources
+  beatResources: {}
 
 image:
   repository: unicef/hope-payment-gateway

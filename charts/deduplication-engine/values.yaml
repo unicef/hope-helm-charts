@@ -14,6 +14,10 @@ backend:
 
 celery:
   replicaCount: 1
+  # Resources for the celery worker (and beat, unless beatResources is set)
+  resources: {}
+  # Optional override for celery beat; falls back to celery.resources
+  beatResources: {}
 
 global:
   imagePullPolicy: IfNotPresent
@@ -59,10 +63,14 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   host: chart-example.local
 
+# Resources for the backend container
+resources: {}
+
+# HPA for the backend deployment
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 3
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 

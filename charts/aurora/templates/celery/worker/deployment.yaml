@@ -52,7 +52,7 @@ spec:
           {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
                 name: {{ include "aurora.fullname" . }}-aurora
-          {{- with .Values.resources }}
+          {{- with (.Values.celery.resources | default .Values.resources) }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}

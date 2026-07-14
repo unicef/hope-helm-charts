@@ -35,6 +35,10 @@ spec:
           {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
                 name: {{ include "payment-gateway.fullname" . }}-backend
+          {{- with (.Values.celery.beatResources | default .Values.celery.resources) }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
       volumes:
