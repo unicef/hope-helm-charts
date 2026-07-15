@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "reporting.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.celery.replicaCount }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "reporting.selectorLabels" . | nindent 6 }}
@@ -37,6 +35,10 @@ spec:
           {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
                 name: {{ include "reporting.fullname" . }}-backend
+          {{- with (.Values.celery.beatResources | default .Values.celery.resources) }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
       volumes:

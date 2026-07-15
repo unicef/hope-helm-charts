@@ -45,7 +45,7 @@ spec:
             - configMapRef:
                 name: {{ include "payment-gateway.fullname" . }}-backend
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml (.Values.celery.resources | default .Values.resources) | nindent 12 }}
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
             {{- if .Values.keyvault.enabled }}

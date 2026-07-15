@@ -31,14 +31,22 @@ nginx:
 celery:
   podAnnotations: {}
 
+  # NOTE: no celery HPA template exists; when enabled this only strips the
+  # replica count from the worker Deployments, leaving them unmanaged.
+  # Keep disabled unless a celery HPA/KEDA scaler is added to the chart.
   autoscaling:
-    enabled: true
+    enabled: false
 
   defaultWorker:
     replicaCount: 1
 
   periodicWorker:
     replicaCount: 1
+
+  # Resources for the celery workers (and beat, unless beatResources is set)
+  resources: {}
+  # Optional override for celery beat; falls back to celery.resources
+  beatResources: {}
 
 flower:
   enabled: false
