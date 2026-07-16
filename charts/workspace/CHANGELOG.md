@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.4 (2026-07-14)
+* Add backend `HorizontalPodAutoscaler` template (`autoscaling/v2`), gated on `autoscaling.enabled`, with optional CPU and memory utilization targets
+* Add backend `autoscaling` values (enabled false, minReplicas 1, maxReplicas 3, targetCPUUtilizationPercentage 80) and backend `resources: {}`
+* Add celery `resources` / `beatResources` values; celery beat uses `beatResources | default resources`, worker uses `celery.resources`
+
 ## 0.5.3 (2026-03-17)
 * Redis: fix replica missing command/args/volumeMount defaults (same as master)
 

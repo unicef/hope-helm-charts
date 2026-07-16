@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.7 (2026-07-16)
+* Upgrade ES9 image `docker.elastic.co/elasticsearch/elasticsearch` from `9.0.1` to `9.4.3` in `x-es9-base` (main container) and both `x-es9-nodegroup` initContainers (`configure-sysctl`, `install-plugins`) — affects `es-search` and `es-index`. Minor upgrade within ES 9.x: rolling restart, no reindex.
+
+## 0.14.6 (2026-07-14)
+* Add `celery.resources` and `celery.beatResources` values (both `{}` by default); celery beat now uses `celery.beatResources | default celery.resources` so beat can be sized independently of the workers
+* Default `celery.autoscaling.enabled` to `false` (was `true`): no celery HPA template exists, so enabling it only stripped the replica count from the worker Deployments, leaving them unmanaged
+
 ## 0.14.5 (2026-06-23)
 * Add `volume-permissions` initContainer to `x-es9-nodegroup`: chowns `/bitnami/elasticsearch/data` to `1000:0` so the official ES image (runAsUser 1000) can write its data dir
 * Set `coordinating.replicaCount: 0` in `x-es9-base`: Bitnami chart defaults to 2 coordinating pods; all-roles master design needs none

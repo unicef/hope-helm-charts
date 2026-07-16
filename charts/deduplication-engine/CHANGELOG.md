@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.8 (2026-07-14)
+* Add backend `HorizontalPodAutoscaler` template (`autoscaling/v2`), gated on `autoscaling.enabled`, with optional CPU and memory utilization targets
+* Lower `autoscaling.maxReplicas` default from `100` to `3`
+* Add backend `resources: {}` and celery `resources` / `beatResources` values; celery beat uses `beatResources | default resources`, worker uses `celery.resources`
+
 ## 0.14.7 (2026-05-29)
 * Add `IMAGES_ROOT: /var/data` default to `backend.config`
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.3 (2026-07-14)
+* Add celery `resources` and `beatResources` values (both `{}` by default); celery beat uses `beatResources | default resources`, worker uses `celery.resources`
+* Set celery worker `replicas` to `1` (removed the `autoscaling.enabled` replica guard)
+
 ## 0.14.2 (2026-03-17)
 * Redis: fix replica missing command/args/volumeMount defaults (same as master)
 

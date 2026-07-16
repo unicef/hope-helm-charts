@@ -387,7 +387,7 @@ x-es9-base: &es9-base
   image:
     registry: docker.elastic.co
     repository: elasticsearch/elasticsearch
-    tag: "9.0.1"
+    tag: "9.4.3"
   sysctlImage:
     enabled: false
   enableDefaultInitContainers: false
@@ -433,7 +433,7 @@ x-es9-nodegroup: &es9-nodegroup
     allowPrivilegeEscalation: false
   initContainers:
     - name: configure-sysctl
-      image: "docker.elastic.co/elasticsearch/elasticsearch:9.0.1"
+      image: "docker.elastic.co/elasticsearch/elasticsearch:9.4.3"
       command: ['sysctl', '-w', 'vm.max_map_count=262144']
       securityContext:
         privileged: true
@@ -452,7 +452,7 @@ x-es9-nodegroup: &es9-nodegroup
         - name: data
           mountPath: /bitnami/elasticsearch/data
     - name: install-plugins
-      image: "docker.elastic.co/elasticsearch/elasticsearch:9.0.1"
+      image: "docker.elastic.co/elasticsearch/elasticsearch:9.4.3"
       command:
         - bash
         - -c
