@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2 (2026-07-14)
+* Add `celery.resources` and `celery.beatResources` values (both `{}` by default). Celery worker resources fall back `celery.resources | default resources`; celery beat falls back `celery.beatResources | default celery.resources | default resources`
+
 ## 0.2.1 (2026-04-07)
 * Fix celery worker/beat to use `args: ["run"]` with `START_WORKER`/`START_CRON` env vars (circusd entrypoint)
 
