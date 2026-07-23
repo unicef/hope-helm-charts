@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.4 (2026-07-23)
+* Fix backend `HorizontalPodAutoscaler`
+
 ## 0.14.3 (2026-07-14)
 * Add celery `resources` and `beatResources` values (both `{}` by default); celery beat uses `beatResources | default resources`, worker uses `celery.resources`
 * Set celery worker `replicas` to `1` (removed the `autoscaling.enabled` replica guard)
