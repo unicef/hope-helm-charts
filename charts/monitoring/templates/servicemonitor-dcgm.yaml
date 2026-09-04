@@ -1,0 +1,20 @@
+{{- if and .Values.scrape.enabled (index .Values "dcgm-exporter" "enabled") }}
+apiVersion: azmonitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-dcgm-exporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "monitoring.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dcgm-exporter
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ .Values.scrape.dcgm.interval }}
+  labelLimit: 63
+  labelNameLengthLimit: 511
+  labelValueLengthLimit: 1023
+{{- end }}

@@ -1,0 +1,12 @@
+apiVersion: v2
+name: monitoring
+description: Observability components for HOPE clusters — metric exporters and the scrape configuration Azure Monitor managed Prometheus needs to collect them.
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: dcgm-exporter
+    version: 4.8.3
+    repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+    condition: dcgm-exporter.enabled
