@@ -1,0 +1,60 @@
+# Default values for monitoring.
+# Everything is off by default: enable per environment from hope-deployment.
+
+# ---------------------------------------------------------------------------
+# NVIDIA DCGM exporter — GPU metrics. Sub-chart values.
+#
+# Deliberately does NOT request nvidia.com/gpu. Where the device plugin runs
+# time-slicing with failRequestsGreaterThanOne, every replica is already
+# claimed by the workload; requesting one would fail to schedule or displace a
+# pod. Reading the driver through NVIDIA_VISIBLE_DEVICES needs no allocation.
+# ---------------------------------------------------------------------------
+dcgm-exporter:
+  enabled: false
+
+  # Set to the GPU node pool, e.g. apppoolgpu01.
+  nodeSelector: {}
+  tolerations: []
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  extraEnv:
+    - name: NVIDIA_VISIBLE_DEVICES
+      value: "all"
+    - name: NVIDIA_DRIVER_CAPABILITIES
+      value: "utility"
+    # Adds exported_namespace / exported_pod / exported_container labels so
+    # metrics can be attributed to the pod holding the GPU.
+    - name: DCGM_EXPORTER_KUBERNETES
+      value: "true"
+
+  kubeletPath: "/var/lib/kubelet/pod-resources"
+
+  service:
+    enable: true
+    type: ClusterIP
+    port: 9400
+
+  # The prometheus-operator CRD. Off: these clusters use Azure Monitor managed
+  # Prometheus, which reads its own CRDs — see scrape.* below.
+  serviceMonitor:
+    enabled: false
+
+# ---------------------------------------------------------------------------
+# Scrape configuration for Azure Monitor managed Prometheus.
+#
+# Uses azmonitoring.coreos.com/v1, NOT monitoring.coreos.com — Azure ships its
+# own PodMonitor/ServiceMonitor CRDs and ignores the prometheus-operator ones.
+# ---------------------------------------------------------------------------
+scrape:
+  # Requires ama-metrics on the cluster (az aks update --enable-azure-monitor-metrics).
+  enabled: false
+  dcgm:
+    # GPU work can arrive in sub-second bursts; at 30s a burst is invisible.
+    interval: 15s
