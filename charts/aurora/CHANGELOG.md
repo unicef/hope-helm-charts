@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 (2026-09-22)
+* Add optional streaming listener deployment (`streaming.enabled`, `streaming.replicaCount`, `streaming.args`, `streaming.resources`, `streaming.livenessProbe`, `streaming.readinessProbe`), so message bus consumers run separately from the web pod
+* Make celery roles configurable via `celery.args` and `celery.beatArgs` (both default to `["run"]`, unchanged behaviour) for images whose entrypoint takes the role as an argument
+* Add `celery.beatEnabled` (default `true`, unchanged behaviour) so an app can run a celery worker without a beat pod
+* Add `initialDelaySeconds`, `timeoutSeconds` and `failureThreshold` to the default web probes; the previous defaults had no initial delay and could kill slow-starting containers
+
 ## 0.2.2 (2026-07-14)
 * Add `celery.resources` and `celery.beatResources` values (both `{}` by default). Celery worker resources fall back `celery.resources | default resources`; celery beat falls back `celery.beatResources | default celery.resources | default resources`
 

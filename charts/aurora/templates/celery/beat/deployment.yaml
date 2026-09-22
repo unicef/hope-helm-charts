@@ -1,4 +1,4 @@
-{{- if .Values.celery.enabled }}
+{{- if and .Values.celery.enabled .Values.celery.beatEnabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,7 +38,8 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["run"]
+          args:
+            {{- toYaml .Values.celery.beatArgs | nindent 12 }}
           env:
             - name: START_PROXY
               value: "false"

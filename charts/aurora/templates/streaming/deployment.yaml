@@ -1,16 +1,16 @@
-{{- if .Values.celery.enabled }}
+{{- if .Values.streaming.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "aurora.fullname" . }}-celery-worker
+  name: {{ include "aurora.fullname" . }}-streaming
   labels:
     {{- include "aurora.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.celery.replicaCount }}
+  replicas: {{ .Values.streaming.replicaCount }}
   selector:
     matchLabels:
       {{- include "aurora.selectorLabels" . | nindent 6 }}
-      service: "celery-worker"
+      service: "streaming"
   template:
     metadata:
       annotations:
@@ -23,15 +23,19 @@ spec:
       {{- end }}
       labels:
         {{- include "aurora.selectorLabels" . | nindent 8 }}
-        service: "celery-worker"
+        service: "streaming"
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "aurora.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
-        - name: celery
+        - name: streaming
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -39,26 +43,43 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            {{- toYaml .Values.celery.args | nindent 12 }}
-          env:
-            - name: START_PROXY
-              value: "false"
-            - name: START_APP
-              value: "false"
-            - name: START_WORKER
-              value: "true"
-            - name: START_CRON
-              value: "false"
+            {{- toYaml .Values.streaming.args | nindent 12 }}
           envFrom:
           {{ include "keyvault.secretRef" . | nindent 12 }}
             - configMapRef:
                 name: {{ include "aurora.fullname" . }}-aurora
-          {{- with (.Values.celery.resources | default .Values.resources) }}
+          {{- with .Values.streaming.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.streaming.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with (.Values.streaming.resources | default .Values.resources) }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
             {{ include "keyvault.volumeMounts" . | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         {{ include "keyvault.volumes" . | nindent 8 }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}
