@@ -1,0 +1,37 @@
+{{- range $worker, $queue := dict "defaultWorker" "default" "periodicWorker" "periodic" }}
+{{- $cfg := index $.Values.celery $worker }}
+{{- if $cfg.keda.enabled }}
+{{- if not $.Values.celery.keda.address }}
+{{- fail (printf "celery.%s.keda.enabled needs celery.keda.address" $worker) }}
+{{- end }}
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "core.fullname" $ }}-celery-worker-{{ $queue }}
+  labels:
+    {{- include "core.labels" $ | nindent 4 }}
+    core/service: celery-worker-{{ $queue }}
+spec:
+  scaleTargetRef:
+    name: {{ include "core.fullname" $ }}-celery-worker-{{ $queue }}
+  pollingInterval: {{ $.Values.celery.keda.pollingInterval }}
+  cooldownPeriod: {{ $.Values.celery.keda.cooldownPeriod }}
+  minReplicaCount: {{ $cfg.keda.minReplicaCount }}
+  maxReplicaCount: {{ $cfg.keda.maxReplicaCount }}
+  {{- with $.Values.celery.keda.behavior }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        {{- toYaml . | nindent 8 }}
+  {{- end }}
+  triggers:
+    - type: redis
+      metadata:
+        address: {{ $.Values.celery.keda.address | quote }}
+        databaseIndex: {{ $.Values.celery.keda.databaseIndex | quote }}
+        enableTLS: {{ $.Values.celery.keda.enableTLS | quote }}
+        listName: {{ $queue | quote }}
+        listLength: {{ $cfg.keda.listLength | quote }}
+{{- end }}
+{{- end }}

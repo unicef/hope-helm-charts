@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "core.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.celery.autoscaling.enabled }}
+  {{- if not (or .Values.celery.autoscaling.enabled .Values.celery.defaultWorker.keda.enabled) }}
   replicas: {{ .Values.celery.defaultWorker.replicaCount }}
   {{- end }}
   selector:
@@ -31,6 +31,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "core.serviceAccountName" . }}
+      {{- with .Values.celery.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
       initContainers:
@@ -72,7 +75,7 @@ metadata:
   labels:
     {{- include "core.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.celery.autoscaling.enabled }}
+  {{- if not (or .Values.celery.autoscaling.enabled .Values.celery.periodicWorker.keda.enabled) }}
   replicas: {{ .Values.celery.periodicWorker.replicaCount }}
   {{- end }}
   selector:
@@ -98,6 +101,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "core.serviceAccountName" . }}
+      {{- with .Values.celery.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
       initContainers:
