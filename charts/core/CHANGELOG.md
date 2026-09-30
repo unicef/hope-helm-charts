@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.8 (2026-09-29)
+* Add KEDA ScaledObject for celery workers (`celery.<worker>.keda`), disabled by default
+* Add `celery.terminationGracePeriodSeconds`
+
 ## 0.14.7 (2026-07-16)
 * Upgrade ES9 image `docker.elastic.co/elasticsearch/elasticsearch` from `9.0.1` to `9.4.3` in `x-es9-base` (main container) and both `x-es9-nodegroup` initContainers (`configure-sysctl`, `install-plugins`) — affects `es-search` and `es-index`. Minor upgrade within ES 9.x: rolling restart, no reindex.
 

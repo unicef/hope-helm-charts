@@ -37,11 +37,33 @@ celery:
   autoscaling:
     enabled: false
 
+  # Unset = Kubernetes default (30s)
+  terminationGracePeriodSeconds: null
+
+  # KEDA queue-depth scaling, enabled per worker below (needs KEDA in the cluster)
+  keda:
+    address: ""  # redis host:port
+    databaseIndex: "0"
+    enableTLS: false
+    pollingInterval: 30
+    cooldownPeriod: 300
+    behavior: {}
+
   defaultWorker:
     replicaCount: 1
+    keda:
+      enabled: false
+      minReplicaCount: 1
+      maxReplicaCount: 4
+      listLength: 5  # queued tasks per replica
 
   periodicWorker:
     replicaCount: 1
+    keda:
+      enabled: false
+      minReplicaCount: 1
+      maxReplicaCount: 2
+      listLength: 5
 
   # Resources for the celery workers (and beat, unless beatResources is set)
   resources: {}
