@@ -39,7 +39,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-celery-beat
           args:
-            - celery -A hope.apps.core.celery beat -l info --scheduler hope.apps.core.models:CustomDatabaseScheduler
+            - exec celery -A hope.apps.core.celery beat -l info --scheduler hope.apps.core.models:CustomDatabaseScheduler
           command:
             - sh
             - -c

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.9 (2026-09-30)
+* Run celery worker (`default`, `periodic`) and beat with `exec`: `sh -c` as PID 1 swallowed SIGTERM, so pods were SIGKILLed at the end of the grace period instead of warm-shutting down
+
 ## 0.14.8 (2026-09-29)
 * Add KEDA ScaledObject for celery workers (`celery.<worker>.keda`), disabled by default
 * Add `celery.terminationGracePeriodSeconds`

@@ -43,7 +43,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-celery-worker-default
           args:
-            - celery -A hope.apps.core.celery worker -n default-$HOSTNAME -E -l info --max-tasks-per-child=4 -Q default
+            - exec celery -A hope.apps.core.celery worker -n default-$HOSTNAME -E -l info --max-tasks-per-child=4 -Q default
           command:
             - sh
             - -c
@@ -113,7 +113,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-celery-worker-periodic
           args:
-            - celery -A hope.apps.core.celery worker -n periodic-$HOSTNAME -E -l info --max-tasks-per-child=4 -Q periodic
+            - exec celery -A hope.apps.core.celery worker -n periodic-$HOSTNAME -E -l info --max-tasks-per-child=4 -Q periodic
           command:
             - sh
             - -c
