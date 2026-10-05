@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "workspace.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.celery.keda.enabled }}
   replicas: {{ .Values.celery.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "workspace.selectorLabels" . | nindent 6 }}
@@ -26,6 +28,9 @@ spec:
       imagePullSecrets:
         {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
       serviceAccountName: {{ include "workspace.serviceAccountName" . }}
+      {{- with .Values.celery.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       containers:
         - name: celery
           securityContext:

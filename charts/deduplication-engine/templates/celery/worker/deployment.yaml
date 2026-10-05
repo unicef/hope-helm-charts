@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "deduplication-engine.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.celery.keda.enabled }}
   replicas: {{ .Values.celery.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "deduplication-engine.selectorLabels" . | nindent 6 }}
@@ -27,6 +29,9 @@ spec:
       imagePullSecrets:
         {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
       serviceAccountName: {{ include "deduplication-engine.serviceAccountName" . }}
+      {{- with .Values.celery.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       containers:
         - name: celery
           securityContext:

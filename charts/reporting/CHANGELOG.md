@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.5 (2026-10-05)
+* Add KEDA ScaledObject for the celery worker (`celery.keda`), disabled by default
+* Add `celery.terminationGracePeriodSeconds`
+
 ## 0.14.4 (2026-07-23)
 * Fix backend `HorizontalPodAutoscaler`
 
