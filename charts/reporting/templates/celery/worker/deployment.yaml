@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "reporting.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.celery.keda.enabled }}
   replicas: {{ .Values.celery.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "reporting.selectorLabels" . | nindent 6 }}
@@ -24,6 +26,9 @@ spec:
         {{- include "reporting.selectorLabels" . | nindent 8 }}
         service: "celery-worker"
     spec:
+      {{- with .Values.celery.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       containers:
         - name: celery
           securityContext:

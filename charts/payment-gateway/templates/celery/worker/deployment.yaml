@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "payment-gateway.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.celery.autoscaling.enabled }}
+  {{- if not (or .Values.celery.autoscaling.enabled .Values.celery.keda.enabled) }}
   replicas: {{ .Values.celery.replicaCount }}
   {{- end }}
   selector:
@@ -29,6 +29,9 @@ spec:
       imagePullSecrets:
         {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
       serviceAccountName: {{ include "payment-gateway.serviceAccountName" . }}
+      {{- with .Values.celery.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
       initContainers:
         {{- if .Values.keyvault.enabled }}
         {{ include "payment-gateway.decodeCerts" . | nindent 8 }}

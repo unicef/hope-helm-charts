@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.9 (2026-10-05)
+* Add KEDA ScaledObject for the celery worker (`celery.keda`), disabled by default
+* Add `celery.terminationGracePeriodSeconds`
+
 ## 0.14.8 (2026-07-14)
 * Add backend `HorizontalPodAutoscaler` template (`autoscaling/v2`), gated on `autoscaling.enabled`, with optional CPU and memory utilization targets
 * Lower `autoscaling.maxReplicas` default from `100` to `3`

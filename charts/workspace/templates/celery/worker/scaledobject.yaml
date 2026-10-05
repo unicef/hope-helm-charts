@@ -1,0 +1,34 @@
+{{- with .Values.celery.keda }}
+{{- if .enabled }}
+{{- if not .address }}
+{{- fail "celery.keda.enabled needs celery.keda.address" }}
+{{- end }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "workspace.fullname" $ }}-celery-worker
+  labels:
+    {{- include "workspace.labels" $ | nindent 4 }}
+spec:
+  scaleTargetRef:
+    name: {{ include "workspace.fullname" $ }}-celery-worker
+  pollingInterval: {{ .pollingInterval }}
+  cooldownPeriod: {{ .cooldownPeriod }}
+  minReplicaCount: {{ .minReplicaCount }}
+  maxReplicaCount: {{ .maxReplicaCount }}
+  {{- with .behavior }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        {{- toYaml . | nindent 8 }}
+  {{- end }}
+  triggers:
+    - type: redis
+      metadata:
+        address: {{ .address | quote }}
+        databaseIndex: {{ .databaseIndex | quote }}
+        enableTLS: {{ .enableTLS | quote }}
+        listName: {{ .listName | quote }}
+        listLength: {{ .listLength | quote }}
+{{- end }}
+{{- end }}
