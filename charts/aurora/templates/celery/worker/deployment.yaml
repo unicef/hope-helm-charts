@@ -6,9 +6,7 @@ metadata:
   labels:
     {{- include "aurora.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.celery.keda.enabled }}
   replicas: {{ .Values.celery.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "aurora.selectorLabels" . | nindent 6 }}
@@ -27,9 +25,6 @@ spec:
         {{- include "aurora.selectorLabels" . | nindent 8 }}
         service: "celery-worker"
     spec:
-      {{- with .Values.celery.terminationGracePeriodSeconds }}
-      terminationGracePeriodSeconds: {{ . }}
-      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
