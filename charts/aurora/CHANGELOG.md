@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 (2026-10-19)
+* Add KEDA ScaledObject for the celery worker (`celery.keda`), disabled by default; defaults target the dramatiq queue (`dramatiq:default`)
+* Add `celery.terminationGracePeriodSeconds`
+
 ## 0.3.0 (2026-09-22)
 * Add optional streaming listener deployment (`streaming.enabled`, `streaming.replicaCount`, `streaming.args`, `streaming.resources`, `streaming.livenessProbe`, `streaming.readinessProbe`), so message bus consumers run separately from the web pod
 * Make celery roles configurable via `celery.args` and `celery.beatArgs` (both default to `["run"]`, unchanged behaviour) for images whose entrypoint takes the role as an argument
