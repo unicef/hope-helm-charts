@@ -1,0 +1,38 @@
+{{- if include "reporting.pqRunner.enabled" . }}
+{{- include "reporting.pqRunner.validate" . }}
+{{- if .Values.pqRunner.keda.enabled }}
+{{- $pq := .Values.pqRunner }}
+{{- $base := .Values.celery.keda }}
+{{- $enableTLS := $base.enableTLS }}
+{{- if not (kindIs "invalid" $pq.keda.enableTLS) }}{{ $enableTLS = $pq.keda.enableTLS }}{{ end }}
+{{- with $pq.keda }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "reporting.pqRunner.fullname" $ }}
+  labels:
+    {{- include "reporting.pqRunner.labels" $ | nindent 4 }}
+spec:
+  scaleTargetRef:
+    name: {{ include "reporting.pqRunner.fullname" $ }}
+  pollingInterval: {{ .pollingInterval }}
+  cooldownPeriod: {{ .cooldownPeriod }}
+  minReplicaCount: {{ .minReplicaCount }}
+  maxReplicaCount: {{ .maxReplicaCount }}
+  {{- with .behavior }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        {{- toYaml . | nindent 8 }}
+  {{- end }}
+  triggers:
+    - type: redis
+      metadata:
+        address: {{ .address | default $base.address | quote }}
+        databaseIndex: {{ .databaseIndex | default $base.databaseIndex | quote }}
+        enableTLS: {{ $enableTLS | quote }}
+        listName: {{ .listName | default $pq.queue | quote }}
+        listLength: {{ .listLength | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
