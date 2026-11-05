@@ -11,22 +11,94 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      # Fake Key Vault settings; the keyvault library chart fails rendering without them
+      CI_VALUES: .github/ci/fake-keyvault.yaml
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
+        with:
+          version: v3.22.1
 
-      - name: Loop through all charts and run linter
+      - name: Show Helm version
+        run: helm version
+
+      # helm dependency build only resolves https:// repositories that are added
+      # (OCI and file:// dependencies need nothing)
+      - name: Add chart repositories used by dependencies
         run: |
-          for chart in $(ls charts); do
-            echo "Updating dependencies for chart: $chart"
-            helm dependency update charts/$chart
-            echo "Linting chart: $chart"
-            helm lint charts/$chart \
-              --set keyvault.tenantId=foo \
-              --set keyvault.userAssignedIdentityID=bar \
-              --set keyvault.keyvaultName=baz \
-              --set keyvault.envMappings=null
+          i=0
+          for url in $(sed -n 's/^ *repository: *"\{0,1\}\(https:\/\/[^"]*\)"\{0,1\} *$/\1/p' charts/*/Chart.yaml | sort -u); do
+            i=$((i + 1))
+            helm repo add "dependency-$i" "$url"
           done
+
+      - name: Build dependencies from Chart.lock
+        run: |
+          for chart in charts/*/; do
+            echo "::group::helm dependency build $chart"
+            helm dependency build "$chart"
+            echo "::endgroup::"
+          done
+          # build must only use the lock files, never rewrite them
+          git diff --exit-code -- 'charts/*/Chart.lock'
+
+      - name: Lint charts
+        run: |
+          failed=()
+          for chart in charts/*/; do
+            echo "::group::helm lint $chart"
+            helm lint --strict "$chart" -f "$CI_VALUES" || failed+=("$chart")
+            echo "::endgroup::"
+          done
+          if [ ${#failed[@]} -gt 0 ]; then
+            echo "::error::helm lint failed: ${failed[*]}"
+            exit 1
+          fi
+
+      - name: Render charts
+        run: |
+          out="$RUNNER_TEMP/rendered"
+          mkdir -p "$out"
+          failed=()
+
+          render() { # <chart> <case> [helm args...]
+            local chart=$1 case=$2
+            shift 2
+            echo "::group::helm template $chart ($case)"
+            if helm template "ci-$chart" "charts/$chart" --namespace ci -f "$CI_VALUES" "$@" > "$out/$chart-$case.yaml"; then
+              echo "$(grep -c '^kind:' "$out/$chart-$case.yaml") objects"
+            else
+              failed+=("$chart ($case)")
+            fi
+            echo "::endgroup::"
+          }
+
+          for dir in charts/*/; do
+            chart=$(basename "$dir")
+            if grep -q '^type: *library' "$dir/Chart.yaml"; then
+              echo "$chart is a library chart, not rendered on its own"
+              continue
+            fi
+            render "$chart" defaults
+          done
+
+          # Everything is off by default in monitoring; render its templates too
+          render monitoring enabled --set dcgm-exporter.enabled=true --set scrape.enabled=true
+
+          # pq-runner must stay off unless explicitly enabled
+          render reporting pq-runner-disabled --set pqRunner.enabled=false
+          if grep -l '^# Source: reporting/templates/celery/pq-runner/' "$out"/reporting-*.yaml; then
+            failed+=("reporting (pq-runner rendered while disabled)")
+          fi
+
+          if [ ${#failed[@]} -gt 0 ]; then
+            for f in "${failed[@]}"; do echo "::error::helm template failed: $f"; done
+            exit 1
+          fi

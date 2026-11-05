@@ -1,0 +1,9 @@
+# Fake Key Vault values for CI lint/template only. No real vault, tenant,
+# identity or secret: the keyvault library chart just needs them to be set.
+keyvault:
+  name: ci-fake-keyvault
+  tenantId: 00000000-0000-0000-0000-000000000000
+  userAssignedIdentityID: 00000000-0000-0000-0000-000000000000
+  envMappings:
+    - name: CI-FAKE-SECRET
+      key: CI_FAKE_SECRET

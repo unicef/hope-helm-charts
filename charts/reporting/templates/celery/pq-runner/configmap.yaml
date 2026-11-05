@@ -1,0 +1,25 @@
+{{- if include "reporting.pqRunner.enabled" . }}
+{{- include "reporting.pqRunner.validate" . }}
+{{- $backend := .Values.backend.config | default dict }}
+{{- $data := dict }}
+{{- range $k := (.Values.pqRunner.backendConfigKeys | default list) }}
+{{- $_ := set $data (toString $k) (get $backend (toString $k)) }}
+{{- end }}
+{{- range $k, $v := (.Values.pqRunner.config | default dict) }}
+{{- $_ := set $data $k $v }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "reporting.pqRunner.fullname" . }}
+  labels:
+    {{- include "reporting.pqRunner.labels" . | nindent 4 }}
+{{- if $data }}
+data:
+{{- range $key, $value := $data }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- else }}
+data: {}
+{{- end }}
+{{- end }}

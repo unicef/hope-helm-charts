@@ -1,0 +1,130 @@
+{{- if include "reporting.pqRunner.enabled" . }}
+{{- include "reporting.pqRunner.validate" . }}
+{{- $pq := .Values.pqRunner }}
+{{- $psc := $pq.podSecurityContext }}
+{{- $kv := include "reporting.pqRunner.keyvault" . | fromYaml }}
+{{- $kvCtx := dict "Values" (dict "keyvault" $kv) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reporting.pqRunner.fullname" . }}
+  labels:
+    {{- include "reporting.pqRunner.labels" . | nindent 4 }}
+spec:
+  {{- if not $pq.keda.enabled }}
+  replicas: {{ int $pq.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "reporting.pqRunner.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/celery/pq-runner/configmap.yaml") . | sha256sum }}
+        {{- if $kv.enabled }}
+        checksum/keyvault: {{ include (print $.Template.BasePath "/celery/pq-runner/keyvault.yaml") . | sha256sum }}
+        {{- end }}
+      {{- if .Values.rollme.enabled }}
+        rollme: {{ randAlphaNum 5 | quote }}
+      {{- end }}
+      labels:
+        {{- include "reporting.pqRunner.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "reporting.pqRunner.serviceAccountName" . }}
+      # runs user code: no Kubernetes API token in the pod
+      automountServiceAccountToken: false
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if not (kindIs "invalid" $pq.terminationGracePeriodSeconds) }}
+      terminationGracePeriodSeconds: {{ int $pq.terminationGracePeriodSeconds }}
+      {{- end }}
+      # fixed hardening; values only choose the ids
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: {{ int $psc.runAsUser }}
+        runAsGroup: {{ int $psc.runAsGroup }}
+        fsGroup: {{ int $psc.fsGroup }}
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: pq-runner
+          image: {{ include "reporting.pqRunner.image" . | quote }}
+          imagePullPolicy: {{ $pq.image.pullPolicy | default .Values.global.imagePullPolicy }}
+          {{- with $pq.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $pq.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          # only the runner's own Secret and ConfigMap, never the backend ones
+          envFrom:
+            {{- if $kv.enabled }}
+            {{- include "keyvault.secretRef" $kvCtx | trim | nindent 12 }}
+            {{- end }}
+            - configMapRef:
+                name: {{ include "reporting.pqRunner.fullname" . }}
+          {{- with $pq.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or $pq.tmpVolume.enabled $kv.enabled $pq.extraVolumeMounts }}
+          volumeMounts:
+            {{- if $pq.tmpVolume.enabled }}
+            - name: tmp
+              mountPath: {{ $pq.tmpVolume.mountPath }}
+            {{- end }}
+            {{- if $kv.enabled }}
+            {{- include "keyvault.volumeMounts" $kvCtx | trim | nindent 12 }}
+            {{- end }}
+            {{- with $pq.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+      {{- if or $pq.tmpVolume.enabled $kv.enabled $pq.extraVolumes }}
+      volumes:
+        {{- if $pq.tmpVolume.enabled }}
+        - name: tmp
+          {{- if or $pq.tmpVolume.medium $pq.tmpVolume.sizeLimit }}
+          emptyDir:
+            {{- with $pq.tmpVolume.medium }}
+            medium: {{ . }}
+            {{- end }}
+            {{- with $pq.tmpVolume.sizeLimit }}
+            sizeLimit: {{ . }}
+            {{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- end }}
+        {{- if $kv.enabled }}
+        {{- include "keyvault.volumes" $kvCtx | trim | nindent 8 }}
+        {{- end }}
+        {{- with $pq.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with $pq.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $pq.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $pq.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
