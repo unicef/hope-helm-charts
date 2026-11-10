@@ -167,8 +167,8 @@ pqRunner:
 
   # Own SecretProviderClass + Secret through the keyvault library chart.
   # name/tenantId/userAssignedIdentityID fall back to the top-level keyvault block;
-  # envMappings never do. Mailjet/Azure/Flower keys and the backend's database
-  # objects are rejected.
+  # envMappings never do. Mailjet/Azure/storage/Flower keys (and backend objects
+  # feeding them) are rejected; the backend's database and SECRET_KEY objects can be reused.
   keyvault:
     enabled: true
     resourceName: ""  # default "<fullname>-pq-runner" -> "<fullname>-pq-runner-secret-provider"

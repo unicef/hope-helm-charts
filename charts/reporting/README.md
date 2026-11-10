@@ -56,8 +56,8 @@ The chart never sets `POWER_QUERY_EXECUTION_MODE`. Set it per environment in `ba
 - The runner's `envFrom` holds only its own Secret and its own ConfigMap. It never gets the backend `keyvault-secret`, the backend SecretProviderClass or the `<fullname>-backend` ConfigMap. There is no `env`, `envFrom`, `podAnnotations` or `podLabels` value; setting one fails the render.
 - Non-secret env: only the keys listed in `pqRunner.backendConfigKeys` are copied from `backend.config` (each must exist there), plus `pqRunner.config`, which wins on conflict.
 - Secrets: only `pqRunner.keyvault.envMappings`. Key Vault name, tenant and identity fall back to the top-level `keyvault` block; mappings never do.
-- Rejected in `envMappings`, `backendConfigKeys` and `config` (case-insensitive): `MAILJET_*`, `AZURE_CLIENT_*`, `AZURE_TENANT_ID`, `*_AZURE_ACCOUNT_KEY`, `HOPE_AZURE_SAS_TOKEN`, `FLOWER_BASIC_AUTH`. `DATABASE_URL`, `DATABASE_HOPE_URL` and `SECRET_KEY` are allowed only from Key Vault, never from a ConfigMap.
-- `envMappings` may not reuse a backend Key Vault object (names compared case-insensitively, as in Key Vault) that the backend maps to one of the keys above, or to `DATABASE_URL` / `DATABASE_HOPE_URL`: the runner needs its own PostgreSQL role and its own Key Vault object. Reusing other backend objects, such as `SECRET_KEY`, is not blocked.
+- Rejected in `envMappings`, `backendConfigKeys` and `config` (case-insensitive): `MAILJET_*`, `AZURE_CLIENT_*`, `AZURE_TENANT_ID`, `*_AZURE_ACCOUNT_KEY`, `HOPE_AZURE_SAS_TOKEN`, `FILE_STORAGE_*`, `FLOWER_BASIC_AUTH`. `DATABASE_URL`, `DATABASE_HOPE_URL` and `SECRET_KEY` are allowed only from Key Vault, never from a ConfigMap.
+- `envMappings` may not reuse a backend Key Vault object (names compared case-insensitively, as in Key Vault) that the backend maps to one of the keys above. Reusing the backend's `DATABASE_URL`, `DATABASE_HOPE_URL` and `SECRET_KEY` objects is allowed: the runner uses the same database roles as the application.
 - `POWER_QUERY_RUNNER` (it lets a process run `preview_query`) belongs to the runner only: `pqRunner.config` or `pqRunner.keyvault.envMappings`. On every render, also with `pqRunner.enabled: false`, the chart rejects it for the regular backend/worker/beat/flower/job: in `backend.config` unless explicitly inactive (empty, `0`, `false`, `no`, `off`, `n`), and in `keyvault.envMappings` whatever the secret holds. Enforced by `values.schema.json` (so `helm lint` fails too; `helm lint` ignores `fail()`) and by a template check that still applies with `--skip-schema-validation`.
 - Always a dedicated ServiceAccount (never `default` or the backend's). `automountServiceAccountToken: false` on both the pod and the ServiceAccount.
 - Security context, fixed in the template: pod `runAsNonRoot: true`, `seccompProfile: RuntimeDefault`; container `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, `allowPrivilegeEscalation: false`, `privileged: false`, `capabilities.drop: [ALL]`. Only `pqRunner.podSecurityContext.runAsUser`, `runAsGroup` and `fsGroup` are configurable (non-zero integers, default 1030); any other key, or a `pqRunner.securityContext`, fails the render.
@@ -76,7 +76,7 @@ The chart does not guess application parameters. With `pqRunner.enabled: true`, 
 
 - `pqRunner.queue`: the runner's Celery queue. It must differ from `celery.keda.listName`, the regular worker's queue.
 - `pqRunner.command` and/or `pqRunner.args`: the runner start command. The chart does not add `-Q <queue>`, so the queue has to be part of the command. The regular worker runs `args: ["worker"]` and its queues are set by the image, so the developers must confirm that it does not also consume the runner queue.
-- `pqRunner.keyvault.envMappings`: the runner-only Key Vault objects (for example its own `DATABASE_URL` with a restricted PostgreSQL role), unless `pqRunner.keyvault.enabled: false`.
+- `pqRunner.keyvault.envMappings`: the Key Vault objects the runner needs (`DATABASE_URL`, `DATABASE_HOPE_URL`, `SECRET_KEY`; the backend's objects can be reused), unless `pqRunner.keyvault.enabled: false`.
 - `pqRunner.backendConfigKeys` / `pqRunner.config`: the non-secret settings the runner needs.
 
 Also to confirm: the image has UID/GID 1030 and works on a read-only root filesystem (extra writable paths go to `extraVolumes`), plus resources, concurrency (`pqRunner.keda.listLength`) and `terminationGracePeriodSeconds`.
@@ -91,20 +91,42 @@ Also to confirm: the image has UID/GID 1030 and works on a read-only root filesy
 ```yaml
 pqRunner:
   enabled: true
-  queue: <runner queue>             # from the developers
-  args: [<runner start command>]    # from the developers
+  queue: queue_hcr_power_query
+  # Bypasses the image entrypoint: its pq-runner mode needs root (chown, gosu),
+  # which the fixed security context does not allow.
+  command:
+    - tini
+    - --
+    - celery
+    - -A
+    - hope_country_report.config.celery
+    - worker
+    - --queues=queue_hcr_power_query
+    - --concurrency=1
+    - -E
+    - --loglevel=ERROR
+  config:
+    POWER_QUERY_RUNNER: "1"
+    POWER_QUERY_EXECUTION_MODE: runner
+    HOME: /tmp
+    TMPDIR: /tmp
+    XDG_CACHE_HOME: /tmp/.cache
   backendConfigKeys:
     - CELERY_BROKER_URL
   keyvault:
     envMappings:
-      - name: <KV object with the runner's restricted DATABASE_URL>
+      - name: <backend DATABASE_URL object>
         key: DATABASE_URL
+      - name: <backend DATABASE_HOPE_URL object>
+        key: DATABASE_HOPE_URL
+      - name: <backend SECRET_KEY object>
+        key: SECRET_KEY
   keda:
     enabled: true                   # or false with replicaCount for clusters without KEDA
 ```
 
 ### Enabling order
 
-1. Developers confirm the values above; DBA creates the restricted PostgreSQL role; Ops creates the runner Key Vault objects.
+1. Developers confirm the values above.
 2. Deploy with `pqRunner.enabled: true`, without changing `POWER_QUERY_EXECUTION_MODE`. Check that the pod runs as 1030, has no Mailjet/Azure variables and consumes its queue.
 3. Then set `POWER_QUERY_EXECUTION_MODE=runner`, one environment at a time. Roll back the same way: switch the mode back first, then disable the runner.
