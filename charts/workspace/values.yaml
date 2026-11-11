@@ -68,6 +68,19 @@ celery:
   # Optional override for celery beat; falls back to celery.resources
   beatResources: {}
 
+# django-streaming listener (RabbitMQ): runs the image's `stream-listener` mode, which declares
+# the exchange/queues (`stream configure --queues`) and consumes them. Needs STREAMING_BROKER_URL
+# (rabbit://user:pass@host:5672?vhost=<vhost>&exchange=<exchange>), normally from the keyvault.
+streaming:
+  enabled: false
+  replicaCount: 1
+  args: ["stream-listener"]
+  # Unset = Kubernetes default (30s)
+  terminationGracePeriodSeconds: null
+  # Falls back to celery.resources
+  resources: {}
+  livenessProbe: {}
+
 keyvault:
   enabled: true
   mountPath: /mnt/secrets

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.6 (2026-11-11)
+* Add optional django-streaming listener Deployment `<fullname>-streaming` (`streaming.enabled`, default off; args `["stream-listener"]`), same envFrom as the celery worker
+
 ## 0.5.5 (2026-10-05)
 * Add KEDA ScaledObject for the celery worker (`celery.keda`), disabled by default
 * Add `celery.terminationGracePeriodSeconds`
