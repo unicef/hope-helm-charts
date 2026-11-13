@@ -130,6 +130,102 @@ celery:
   # Optional override for celery beat; falls back to celery.resources
   beatResources: {}
 
+# Dedicated Celery worker for user Python code (POWER_QUERY_EXECUTION_MODE=runner).
+# Isolated from the backend: it never gets the backend Secret or ConfigMap, only
+# its own ConfigMap (backendConfigKeys + config) and its own Key Vault Secret.
+# Nothing is rendered while disabled. See README.md before enabling.
+pqRunner:
+  enabled: false
+
+  # Used when keda.enabled is false
+  replicaCount: 1
+
+  # Empty fields fall back to image.repository / image.tag / global.imagePullPolicy
+  image:
+    repository: ""
+    tag: ""
+    pullPolicy: ""
+
+  # Required when enabled; to be provided by the country-report developers.
+  # The chart does not add the queue to the command: it must be part of command/args.
+  command: []
+  args: []
+  queue: ""  # runner Celery queue; must differ from celery.keda.listName
+
+  # Unset = Kubernetes default (30s)
+  terminationGracePeriodSeconds: null
+
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  # Non-secret env for the runner ConfigMap: keys copied from backend.config
+  # (allowlist, each must exist there) and runner-only values. config wins on conflict.
+  backendConfigKeys: []
+  config: {}
+
+  # Own SecretProviderClass + Secret through the keyvault library chart.
+  # name/tenantId/userAssignedIdentityID fall back to the top-level keyvault block;
+  # envMappings never do. Mailjet/Azure/static-storage/Flower keys (and backend objects
+  # feeding them) are rejected; the backend's database, SECRET_KEY and
+  # FILE_STORAGE_MEDIA/DEFAULT/HOPE objects can be reused (Key Vault only).
+  keyvault:
+    enabled: true
+    resourceName: ""  # default "<fullname>-pq-runner" -> "<fullname>-pq-runner-secret-provider"
+    secretName: ""    # default "<fullname>-pq-runner-secret"
+    mountPath: /mnt/secrets
+    name: ""
+    tenantId: ""
+    userAssignedIdentityID: ""
+    envMappings: []
+
+  # KEDA queue-depth scaling (needs KEDA in the cluster). Empty address,
+  # databaseIndex and enableTLS fall back to celery.keda; listName to queue.
+  keda:
+    enabled: false
+    address: ""
+    databaseIndex: ""
+    enableTLS: null
+    listName: ""
+    pollingInterval: 30
+    cooldownPeriod: 300
+    # keep >= 1: the Key Vault Secret is synced only while a pod mounts it
+    minReplicaCount: 1
+    maxReplicaCount: 4
+    listLength: 5  # queued tasks per replica
+    behavior: {}
+
+  # Always a dedicated ServiceAccount; neither it nor the pod mounts an API token
+  serviceAccount:
+    create: true
+    name: ""  # required when create is false; must not be "default" or the backend's
+    annotations: {}
+
+  # Only these ids are configurable (non-zero). The rest of the pod and container
+  # security context is fixed by the chart: runAsNonRoot, RuntimeDefault seccomp,
+  # readOnlyRootFilesystem, no privilege escalation, not privileged, drop ALL.
+  podSecurityContext:
+    runAsUser: 1030
+    runAsGroup: 1030
+    fsGroup: 1030
+
+  # Writable /tmp on a read-only root filesystem
+  tmpVolume:
+    enabled: true
+    mountPath: /tmp
+    medium: ""
+    sizeLimit: ""
+
+  # Further writable paths (confirm with developers). Only {name, emptyDir}
+  # volumes are allowed: no Secret, ConfigMap, CSI, projected or hostPath.
+  extraVolumes: []
+  # - name: home
+  #   emptyDir: {}
+  extraVolumeMounts: []
+  # - name: home
+  #   mountPath: /home/app
+
 keyvault:
   enabled: true
   mountPath: /mnt/secrets

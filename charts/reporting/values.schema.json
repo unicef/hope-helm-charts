@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "Values guard, not a full schema: only POWER_QUERY_RUNNER for the regular backend/worker/beat/flower/job is constrained (same rules as reporting.pqRunner.validateBackend in templates/celery/pq-runner/_pq-runner.tpl). Kept here because helm lint ignores fail(); the runner's own flag belongs in pqRunner.config or pqRunner.keyvault.envMappings.",
+  "properties": {
+    "backend": {
+      "properties": {
+        "config": {
+          "patternProperties": {
+            "^[Pp][Oo][Ww][Ee][Rr]_[Qq][Uu][Ee][Rr][Yy]_[Rr][Uu][Nn][Nn][Ee][Rr]$": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "const": false
+                },
+                {
+                  "const": 0
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\s*(|0|[Ff][Aa][Ll][Ss][Ee]|[Nn][Oo]|[Oo][Ff][Ff]|[Nn])\\s*$"
+                }
+              ],
+              "$comment": "active value would let the regular backend/worker run preview_query; only explicitly inactive values are allowed"
+            }
+          }
+        }
+      }
+    },
+    "keyvault": {
+      "properties": {
+        "envMappings": {
+          "items": {
+            "properties": {
+              "key": {
+                "not": {
+                  "type": "string",
+                  "pattern": "^[Pp][Oo][Ww][Ee][Rr]_[Qq][Uu][Ee][Rr][Yy]_[Rr][Uu][Nn][Nn][Ee][Rr]$"
+                },
+                "$comment": "the backend Key Vault Secret is loaded by the regular backend/worker; the secret value is unknown to Helm, so the mapping is rejected whatever it holds"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

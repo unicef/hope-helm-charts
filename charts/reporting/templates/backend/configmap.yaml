@@ -1,3 +1,4 @@
+{{- include "reporting.pqRunner.validateBackend" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:

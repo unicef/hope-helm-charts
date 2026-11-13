@@ -1,0 +1,7 @@
+{{- if include "reporting.pqRunner.enabled" . }}
+{{- include "reporting.pqRunner.validate" . }}
+{{- if .Values.pqRunner.keyvault.enabled }}
+{{- $kv := include "reporting.pqRunner.keyvault" . | fromYaml }}
+{{ include "keyvault.secretProviderClass" (dict "Values" (dict "keyvault" $kv)) }}
+{{- end }}
+{{- end }}
