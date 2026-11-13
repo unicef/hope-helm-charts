@@ -70,8 +70,8 @@ so the first error is always one of these, whatever the render order.
 */}}
 {{- define "reporting.pqRunner.validate" -}}
 {{- $pq := .Values.pqRunner }}
-{{- $forbidden := "^(MAILJET_.*|AZURE_CLIENT_.*|AZURE_TENANT_ID|(.*_)?AZURE_ACCOUNT_KEY|HOPE_AZURE_SAS_TOKEN|FILE_STORAGE_.*|FLOWER_BASIC_AUTH)$" }}
-{{- $secretOnly := list "DATABASE_URL" "DATABASE_HOPE_URL" "SECRET_KEY" }}
+{{- $forbidden := "^(MAILJET_.*|AZURE_CLIENT_.*|AZURE_TENANT_ID|(.*_)?AZURE_ACCOUNT_KEY|HOPE_AZURE_SAS_TOKEN|FILE_STORAGE_STATIC|FLOWER_BASIC_AUTH)$" }}
+{{- $secretOnly := list "DATABASE_URL" "DATABASE_HOPE_URL" "SECRET_KEY" "FILE_STORAGE_MEDIA" "FILE_STORAGE_DEFAULT" "FILE_STORAGE_HOPE" }}
 {{- $mainQueue := .Values.celery.keda.listName | default "" | toString }}
 {{- $count := "^[0-9]+$" }}
 
@@ -178,7 +178,7 @@ so the first error is always one of these, whatever the render order.
 {{- end }}
 {{- $key := upper (toString $m.key) }}
 {{- if regexMatch $forbidden $key }}
-{{- fail (printf "pqRunner.keyvault.envMappings: key %s is not allowed for pq-runner (Mailjet/Azure/storage/Flower credentials)" $m.key) }}
+{{- fail (printf "pqRunner.keyvault.envMappings: key %s is not allowed for pq-runner (Mailjet/Azure/static-storage/Flower credentials)" $m.key) }}
 {{- end }}
 {{- if hasKey $seen $key }}
 {{- fail (printf "pqRunner.keyvault.envMappings: duplicate key %s" $m.key) }}
@@ -186,7 +186,7 @@ so the first error is always one of these, whatever the render order.
 {{- $_ := set $seen $key true }}
 {{- range $mk := (get $mainObjects (upper (toString $m.name)) | default list) }}
 {{- if regexMatch $forbidden $mk }}
-{{- fail (printf "pqRunner.keyvault.envMappings: Key Vault object %s is the backend's %s and is not allowed for pq-runner (Mailjet/Azure/storage/Flower credentials)" $m.name $mk) }}
+{{- fail (printf "pqRunner.keyvault.envMappings: Key Vault object %s is the backend's %s and is not allowed for pq-runner (Mailjet/Azure/static-storage/Flower credentials)" $m.name $mk) }}
 {{- end }}
 {{- end }}
 {{- end }}
