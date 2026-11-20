@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.6 (2026-11-20)
+* KEDA: add `celery.keda.type` (`redis` default, or `rabbitmq`). For `rabbitmq` the chart creates a `TriggerAuthentication` that reads the AMQP URL from the keyvault secret (`celery.keda.rabbitmq.secretKey`, default `CELERY_BROKER_URL`); `listName` is the queue name and `listLength` the ready messages per replica
+
 ## 0.9.5 (2026-10-05)
 * Add KEDA ScaledObject for the celery worker (`celery.keda`), disabled by default
 * Add `celery.terminationGracePeriodSeconds`

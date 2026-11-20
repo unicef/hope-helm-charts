@@ -27,6 +27,7 @@ celery:
   # KEDA queue-depth scaling for the worker (needs KEDA in the cluster)
   keda:
     enabled: false
+    type: redis
     address: ""  # redis host:port
     databaseIndex: "0"
     enableTLS: false
@@ -36,6 +37,10 @@ celery:
     minReplicaCount: 1
     maxReplicaCount: 4
     listLength: 5  # queued tasks per replica
+    rabbitmq:
+      protocol: amqp
+      secretName: ""
+      secretKey: CELERY_BROKER_URL
     behavior: {}
   autoscaling:
     enabled: false
