@@ -1,17 +1,36 @@
 {{- with .Values.celery.keda }}
 {{- if .enabled }}
-{{- if not .address }}
-{{- fail "celery.keda.enabled needs celery.keda.address" }}
+{{- $type := .type | default "redis" }}
+{{- if not (has $type (list "redis" "rabbitmq")) }}
+{{- fail (printf "celery.keda.type must be redis or rabbitmq, got %q" $type) }}
+{{- end }}
+{{- if and (eq $type "redis") (not .address) }}
+{{- fail "celery.keda.type=redis needs celery.keda.address" }}
+{{- end }}
+{{- $fullname := include "deduplication-engine.fullname" $ }}
+{{- if eq $type "rabbitmq" }}
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ $fullname }}-celery-worker
+  labels:
+    {{- include "deduplication-engine.labels" $ | nindent 4 }}
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: {{ .rabbitmq.secretName | default $.Values.keyvault.secretName | default "keyvault-secret" }}
+      key: {{ .rabbitmq.secretKey }}
+---
 {{- end }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "deduplication-engine.fullname" $ }}-celery-worker
+  name: {{ $fullname }}-celery-worker
   labels:
     {{- include "deduplication-engine.labels" $ | nindent 4 }}
 spec:
   scaleTargetRef:
-    name: {{ include "deduplication-engine.fullname" $ }}-celery-worker
+    name: {{ $fullname }}-celery-worker
   pollingInterval: {{ .pollingInterval }}
   cooldownPeriod: {{ .cooldownPeriod }}
   minReplicaCount: {{ .minReplicaCount }}
@@ -23,6 +42,16 @@ spec:
         {{- toYaml . | nindent 8 }}
   {{- end }}
   triggers:
+    {{- if eq $type "rabbitmq" }}
+    - type: rabbitmq
+      metadata:
+        protocol: {{ .rabbitmq.protocol | quote }}
+        queueName: {{ .listName | quote }}
+        mode: QueueLength
+        value: {{ .listLength | quote }}
+      authenticationRef:
+        name: {{ $fullname }}-celery-worker
+    {{- else }}
     - type: redis
       metadata:
         address: {{ .address | quote }}
@@ -30,5 +59,6 @@ spec:
         enableTLS: {{ .enableTLS | quote }}
         listName: {{ .listName | quote }}
         listLength: {{ .listLength | quote }}
+    {{- end }}
 {{- end }}
 {{- end }}
