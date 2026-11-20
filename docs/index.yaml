@@ -3,6 +3,29 @@ entries:
   aurora:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-11-20T17:28:54.402346+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.x.x
+    description: A Helm chart for Kubernetes
+    digest: 3bd4b636f029714bc2ac546bad038e31d41ee77f71f2ecd577a052dc75b985bb
+    name: aurora
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/aurora-0.3.2.tgz
+    version: 0.3.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-10-19T18:02:12.5563+02:00"
     dependencies:
     - condition: redis.enabled
@@ -209,6 +232,52 @@ entries:
     - https://unicef.github.io/hope-helm-charts/aurora-0.1.0.tgz
     version: 0.1.0
   core:
+  - apiVersion: v2
+    appVersion: core-2.10.1
+    created: "2026-11-20T16:10:21.199784+01:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - alias: redis-celery
+      condition: redis-celery.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: prometheus-redis-exporter.enabled
+      name: prometheus-redis-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 6.9.0
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.6
+    - alias: es-search
+      condition: es-search.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.6
+    - alias: es-index
+      condition: es-index.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.6
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    description: A Helm chart for Kubernetes
+    digest: 863b524c741d51d9dfcd5b882a0e9549d332bbce86507bff19135c28906b208f
+    name: core
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/core-0.14.10.tgz
+    version: 0.14.10
   - apiVersion: v2
     appVersion: core-2.10.1
     created: "2026-10-19T18:02:12.971806+02:00"
@@ -1338,6 +1407,29 @@ entries:
   deduplication-engine:
   - apiVersion: v2
     appVersion: develop
+    created: "2026-11-20T16:34:18.283867+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.x.x
+    description: A Helm chart for Kubernetes
+    digest: 187f16ccdf23c0a09d2bb53feca6c6fc20d3b87b8cbbe79eabb43e4a435f3d13
+    name: deduplication-engine
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/deduplication-engine-0.14.10.tgz
+    version: 0.14.10
+  - apiVersion: v2
+    appVersion: develop
     created: "2026-10-19T18:02:13.302142+02:00"
     dependencies:
     - condition: redis.enabled
@@ -2378,6 +2470,29 @@ entries:
   reporting:
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
+    created: "2026-11-20T17:14:44.769933+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    description: A Helm chart for Kubernetes
+    digest: eeb885cd2ed9133db4972046f6dfb65993ed2c8cd877912a5407b3b86f0094a9
+    name: reporting
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/reporting-0.14.7.tgz
+    version: 0.14.7
+  - apiVersion: v2
+    appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
     created: "2026-11-10T16:46:37.841341+05:00"
     dependencies:
     - condition: redis.enabled
@@ -3010,6 +3125,29 @@ entries:
   workspace:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2026-11-20T17:03:10.167794+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.x.x
+    description: A Helm chart for Kubernetes
+    digest: df0b8c86827f86357097cbd671d28a96b579fd432f962d10371b38629a27cf95
+    name: workspace
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/workspace-0.5.7.tgz
+    version: 0.5.7
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2026-11-11T13:30:39.764839+05:00"
     dependencies:
     - condition: redis.enabled
@@ -3280,4 +3418,4 @@ entries:
     urls:
     - https://unicef.github.io/hope-helm-charts/workspace-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-20T14:53:34.364161+01:00"
+generated: "2026-11-20T17:28:54.390845+01:00"
