@@ -42,11 +42,16 @@ celery:
 
   # KEDA queue-depth scaling, enabled per worker below (needs KEDA in the cluster)
   keda:
+    type: redis
     address: ""  # redis host:port
     databaseIndex: "0"
     enableTLS: false
     pollingInterval: 30
     cooldownPeriod: 300
+    rabbitmq:
+      protocol: amqp
+      secretName: ""
+      secretKey: CELERY_BROKER_URL
     behavior: {}
 
   defaultWorker:
