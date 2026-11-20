@@ -3,6 +3,29 @@ entries:
   aurora:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2026-11-20T17:28:54.402346+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.x.x
+    description: A Helm chart for Kubernetes
+    digest: 3bd4b636f029714bc2ac546bad038e31d41ee77f71f2ecd577a052dc75b985bb
+    name: aurora
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/aurora-0.3.2.tgz
+    version: 0.3.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2026-10-19T18:02:12.5563+02:00"
     dependencies:
     - condition: redis.enabled
@@ -3395,4 +3418,4 @@ entries:
     urls:
     - https://unicef.github.io/hope-helm-charts/workspace-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-20T17:14:44.758697+01:00"
+generated: "2026-11-20T17:28:54.390845+01:00"
