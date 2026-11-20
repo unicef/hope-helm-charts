@@ -2447,6 +2447,29 @@ entries:
   reporting:
   - apiVersion: v2
     appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
+    created: "2026-11-20T17:14:44.769933+01:00"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 24.1.8
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    - condition: keyvault.enabled
+      name: keyvault
+      repository: file://../keyvault
+      version: 0.1.3
+    description: A Helm chart for Kubernetes
+    digest: eeb885cd2ed9133db4972046f6dfb65993ed2c8cd877912a5407b3b86f0094a9
+    name: reporting
+    type: application
+    urls:
+    - https://unicef.github.io/hope-helm-charts/reporting-0.14.7.tgz
+    version: 0.14.7
+  - apiVersion: v2
+    appVersion: country-report-cd55e1362cc62508ef33e2b900930c1fb42aa2f9
     created: "2026-11-10T16:46:37.841341+05:00"
     dependencies:
     - condition: redis.enabled
@@ -3372,4 +3395,4 @@ entries:
     urls:
     - https://unicef.github.io/hope-helm-charts/workspace-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-20T17:03:10.15623+01:00"
+generated: "2026-11-20T17:14:44.758697+01:00"

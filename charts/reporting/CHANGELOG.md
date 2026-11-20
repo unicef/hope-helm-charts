@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.7 (2026-11-20)
+* KEDA: add `celery.keda.type` (`redis` default, or `rabbitmq`). For `rabbitmq` the chart creates a `TriggerAuthentication` that reads the AMQP URL from the keyvault secret (`celery.keda.rabbitmq.secretKey`, default `CELERY_BROKER_URL`); `listName` is the queue name and `listLength` the ready messages per replica
+* pq-runner KEDA: `pqRunner.keda.type` (falls back to `celery.keda.type`); for `rabbitmq` it gets its own `TriggerAuthentication` that reads the pq-runner Key Vault Secret, never the backend one
+
 ## 0.14.6 (unreleased)
 * Add optional `pqRunner`: a dedicated Celery worker Deployment for user Python code, disabled by default (no manifests change while `pqRunner.enabled: false`)
 * `pqRunner` gets its own ConfigMap (allowlisted `backend.config` keys + `pqRunner.config`), its own Key Vault SecretProviderClass and Secret, and its own ServiceAccount; it never mounts the backend Secret or ConfigMap
