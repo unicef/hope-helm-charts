@@ -5,16 +5,38 @@
 {{- $base := .Values.celery.keda }}
 {{- $enableTLS := $base.enableTLS }}
 {{- if not (kindIs "invalid" $pq.keda.enableTLS) }}{{ $enableTLS = $pq.keda.enableTLS }}{{ end }}
+{{- $type := $pq.keda.type | default $base.type | default "redis" }}
+{{- if not (has $type (list "redis" "rabbitmq")) }}
+{{- fail (printf "pqRunner.keda.type must be redis or rabbitmq, got %q" $type) }}
+{{- end }}
+{{- $fullname := include "reporting.pqRunner.fullname" $ }}
+{{- $pqRmq := $pq.keda.rabbitmq | default dict }}
+{{- $baseRmq := $base.rabbitmq | default dict }}
 {{- with $pq.keda }}
+{{- if eq $type "rabbitmq" }}
+{{- $kv := include "reporting.pqRunner.keyvault" $ | fromYaml }}
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: {{ $fullname }}
+  labels:
+    {{- include "reporting.pqRunner.labels" $ | nindent 4 }}
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: {{ $pqRmq.secretName | default $kv.secretName }}
+      key: {{ $pqRmq.secretKey | default $baseRmq.secretKey | default "CELERY_BROKER_URL" }}
+---
+{{- end }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "reporting.pqRunner.fullname" $ }}
+  name: {{ $fullname }}
   labels:
     {{- include "reporting.pqRunner.labels" $ | nindent 4 }}
 spec:
   scaleTargetRef:
-    name: {{ include "reporting.pqRunner.fullname" $ }}
+    name: {{ $fullname }}
   pollingInterval: {{ .pollingInterval }}
   cooldownPeriod: {{ .cooldownPeriod }}
   minReplicaCount: {{ .minReplicaCount }}
@@ -26,6 +48,16 @@ spec:
         {{- toYaml . | nindent 8 }}
   {{- end }}
   triggers:
+    {{- if eq $type "rabbitmq" }}
+    - type: rabbitmq
+      metadata:
+        protocol: {{ $pqRmq.protocol | default $baseRmq.protocol | default "amqp" | quote }}
+        queueName: {{ .listName | default $pq.queue | quote }}
+        mode: QueueLength
+        value: {{ .listLength | quote }}
+      authenticationRef:
+        name: {{ $fullname }}
+    {{- else }}
     - type: redis
       metadata:
         address: {{ .address | default $base.address | quote }}
@@ -33,6 +65,7 @@ spec:
         enableTLS: {{ $enableTLS | quote }}
         listName: {{ .listName | default $pq.queue | quote }}
         listLength: {{ .listLength | quote }}
+    {{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

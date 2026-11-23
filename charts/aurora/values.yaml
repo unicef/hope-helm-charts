@@ -133,6 +133,7 @@ celery:
   # START_WORKER runs dramatiq (circus.ini), whose redis broker keeps each queue as list dramatiq:<queue>
   keda:
     enabled: false
+    type: redis
     address: ""  # redis host:port
     databaseIndex: "0"
     enableTLS: false
@@ -142,6 +143,11 @@ celery:
     minReplicaCount: 1
     maxReplicaCount: 4
     listLength: 32  # queued tasks per replica = dramatiq processes (4) x threads (8)
+    rabbitmq:
+      protocol: amqp
+      queueName: default
+      secretName: ""
+      secretKey: BROKER_URL
     behavior: {}
   beatEnabled: true
   # Resources for the celery worker (and beat, unless beatResources is set);

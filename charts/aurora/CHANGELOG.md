@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.2 (2026-11-20)
+* KEDA: add `celery.keda.type` (`redis` default, or `rabbitmq`). For `rabbitmq` the chart creates a `TriggerAuthentication` that reads the AMQP URL from the keyvault secret (`celery.keda.rabbitmq.secretKey`, default `BROKER_URL`, the dramatiq broker setting) and scales on `celery.keda.rabbitmq.queueName` (default `default`: dramatiq's RabbitMQ broker has no `dramatiq:` prefix); `listLength` is the ready messages per replica
+
 ## 0.3.1 (2026-10-19)
 * Add KEDA ScaledObject for the celery worker (`celery.keda`), disabled by default; defaults target the dramatiq queue (`dramatiq:default`)
 * Add `celery.terminationGracePeriodSeconds`

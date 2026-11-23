@@ -115,6 +115,7 @@ celery:
   # KEDA queue-depth scaling for the worker (needs KEDA in the cluster)
   keda:
     enabled: false
+    type: redis
     address: ""  # redis host:port
     databaseIndex: "0"
     enableTLS: false
@@ -124,6 +125,10 @@ celery:
     minReplicaCount: 1
     maxReplicaCount: 4
     listLength: 5  # queued tasks per replica
+    rabbitmq:
+      protocol: amqp
+      secretName: ""
+      secretKey: CELERY_BROKER_URL
     behavior: {}
   # Resources for the celery worker (and beat, unless beatResources is set)
   resources: {}
@@ -180,10 +185,12 @@ pqRunner:
     userAssignedIdentityID: ""
     envMappings: []
 
-  # KEDA queue-depth scaling (needs KEDA in the cluster). Empty address,
-  # databaseIndex and enableTLS fall back to celery.keda; listName to queue.
+  # KEDA queue-depth scaling (needs KEDA in the cluster). Empty type, address,
+  # databaseIndex, enableTLS and rabbitmq.protocol/secretKey fall back to celery.keda;
+  # listName to queue; rabbitmq.secretName to the pq-runner Key Vault Secret.
   keda:
     enabled: false
+    type: ""
     address: ""
     databaseIndex: ""
     enableTLS: null
@@ -194,6 +201,10 @@ pqRunner:
     minReplicaCount: 1
     maxReplicaCount: 4
     listLength: 5  # queued tasks per replica
+    rabbitmq:
+      protocol: ""
+      secretName: ""
+      secretKey: ""
     behavior: {}
 
   # Always a dedicated ServiceAccount; neither it nor the pod mounts an API token

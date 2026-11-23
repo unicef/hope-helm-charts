@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.14.10 (2026-11-20)
+* KEDA: add `celery.keda.type` (`redis` default, or `rabbitmq`). For `rabbitmq` the chart creates one `TriggerAuthentication` shared by the workers that reads the AMQP URL from the keyvault secret (`celery.keda.rabbitmq.secretKey`, default `CELERY_BROKER_URL`); each worker scales on its own queue (`default`, `periodic`) with `listLength` ready messages per replica
+
 ## 0.14.9 (2026-09-30)
 * Run celery worker (`default`, `periodic`) and beat with `exec`: `sh -c` as PID 1 swallowed SIGTERM, so pods were SIGKILLed at the end of the grace period instead of warm-shutting down
 

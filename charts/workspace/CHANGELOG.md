@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.7 (2026-11-20)
+* KEDA: add `celery.keda.type` (`redis` default, or `rabbitmq`). For `rabbitmq` the chart creates a `TriggerAuthentication` that reads the AMQP URL from the keyvault secret (`celery.keda.rabbitmq.secretKey`, default `CELERY_BROKER_URL`); `listName` is the queue name and `listLength` the ready messages per replica
+
 ## 0.5.6 (2026-11-11)
 * Add optional django-streaming listener Deployment `<fullname>-streaming` (`streaming.enabled`, default off; args `["stream-listener"]`), same envFrom as the celery worker
 
